@@ -15,6 +15,11 @@ import {
   Database,
   RotateCcw,
   Compass,
+  Users,
+  Award,
+  MessageSquare,
+  ChevronDown,
+  Layers,
 } from 'lucide-react';
 import type { NavSection } from '../types';
 import { springSmooth } from '../motion/motionTokens';
@@ -27,12 +32,23 @@ interface NavbarProps {
   onReset: () => void;
 }
 
-const navLinks: { id: NavSection; label: string; icon: React.ReactNode }[] = [
+const primaryNavLinks: { id: NavSection; label: string; icon: React.ReactNode }[] = [
   { id: 'dashboard', label: 'Home', icon: <Sparkles size={16} /> },
-  { id: 'events', label: 'Events Hub', icon: <Calendar size={16} /> },
+  { id: 'events', label: 'Events', icon: <Calendar size={16} /> },
   { id: 'quiz', label: 'Quiz Arena', icon: <BrainCircuit size={16} /> },
   { id: 'leaderboard', label: 'Leaderboard', icon: <Trophy size={16} /> },
   { id: 'attendance', label: 'Attendance', icon: <ClipboardCheck size={16} /> },
+];
+
+const moreNavLinks: { id: NavSection; label: string; icon: React.ReactNode; desc: string }[] = [
+  { id: 'members', label: 'Member Portal', icon: <Users size={16} />, desc: 'Roster & governance' },
+  { id: 'certificates', label: 'Certificates', icon: <Award size={16} />, desc: 'Credential distribution' },
+  { id: 'feedback', label: 'Feedback Hub', icon: <MessageSquare size={16} />, desc: 'Quality & analytics' },
+];
+
+const allMobileNavLinks = [
+  ...primaryNavLinks,
+  ...moreNavLinks,
 ];
 
 export default function Navbar({
@@ -43,7 +59,10 @@ export default function Navbar({
 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showDemoMenu, setShowDemoMenu] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  const isMoreActive = moreNavLinks.some((m) => m.id === activeSection);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,6 +78,7 @@ export default function Navbar({
   const handleNav = (section: NavSection) => {
     onNavigate(section);
     setMobileMenuOpen(false);
+    setShowMoreMenu(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -71,33 +91,33 @@ export default function Navbar({
           {/* Brand Logo & Title */}
           <div
             onClick={() => handleNav('dashboard')}
-            className="flex items-center gap-3.5 cursor-pointer select-none flex-shrink-0 group py-2"
+            className="flex items-center gap-3 cursor-pointer select-none flex-shrink-0 group py-2"
           >
             <Logo size="navbar" interactive />
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-lg lg:text-xl font-extrabold text-white tracking-tight">
+                <span className="text-base sm:text-lg lg:text-xl font-extrabold text-white tracking-tight">
                   MathClub
                 </span>
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                <span className="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
                   NEXUS
                 </span>
               </div>
-              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em]">
+              <p className="text-[9px] sm:text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em]">
                 MATHEMATICS CLUB PORTAL
               </p>
             </div>
           </div>
 
           {/* Desktop Navigation Links with animated layoutId indicator */}
-          <nav className="hidden md:flex items-center gap-1.5 lg:gap-2 relative">
-            {navLinks.map((item) => {
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-2 relative">
+            {primaryNavLinks.map((item) => {
               const isActive = activeSection === item.id;
               return (
                 <button
                   key={item.id}
                   onClick={() => handleNav(item.id)}
-                  className={`relative flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 ${
+                  className={`relative flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors duration-200 ${
                     isActive
                       ? 'text-cyan-300'
                       : 'text-slate-300 hover:text-white'
@@ -117,10 +137,79 @@ export default function Navbar({
                 </button>
               );
             })}
+
+            {/* Desktop "More" Dropdown Menu */}
+            <div className="relative">
+              <button
+                onClick={() => setShowMoreMenu(!showMoreMenu)}
+                className={`relative flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors duration-200 ${
+                  isMoreActive
+                    ? 'text-cyan-300'
+                    : 'text-slate-300 hover:text-white'
+                }`}
+              >
+                {isMoreActive && (
+                  <motion.span
+                    layoutId="activeNavPill"
+                    transition={springSmooth}
+                    className="absolute inset-0 rounded-xl bg-cyan-500/10 border border-cyan-500/30 shadow-[0_0_15px_rgba(0,217,245,0.15)] z-0"
+                  />
+                )}
+                <span className={`relative z-10 ${isMoreActive ? 'text-cyan-400' : 'text-slate-400'}`}>
+                  <Layers size={16} />
+                </span>
+                <span className="relative z-10">More</span>
+                <ChevronDown
+                  size={14}
+                  className={`relative z-10 transition-transform ${showMoreMenu ? 'rotate-180' : ''}`}
+                />
+              </button>
+
+              <AnimatePresence>
+                {showMoreMenu && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setShowMoreMenu(false)}
+                    />
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 mt-2 w-56 rounded-2xl bg-[#091224] border border-slate-700/80 shadow-2xl p-2 z-50 space-y-1"
+                    >
+                      {moreNavLinks.map((sub) => {
+                        const isSubActive = activeSection === sub.id;
+                        return (
+                          <button
+                            key={sub.id}
+                            onClick={() => handleNav(sub.id)}
+                            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors ${
+                              isSubActive
+                                ? 'bg-cyan-500/15 text-cyan-300'
+                                : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
+                            }`}
+                          >
+                            <span className={isSubActive ? 'text-cyan-400' : 'text-slate-400'}>
+                              {sub.icon}
+                            </span>
+                            <div>
+                              <p className="text-xs font-semibold">{sub.label}</p>
+                              <p className="text-[10px] text-slate-400">{sub.desc}</p>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
           </nav>
 
           {/* Right Action Buttons */}
-          <div className="hidden sm:flex items-center gap-3.5">
+          <div className="hidden sm:flex items-center gap-3">
             {/* Demo State Dropdown */}
             <div className="relative">
               <button
@@ -177,15 +266,15 @@ export default function Navbar({
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => handleNav(activeSection === 'events' ? 'quiz' : 'events')}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-[#050B16] bg-cyan-400 hover:bg-cyan-300 transition-colors shadow-sm shadow-cyan-400/20"
+              className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-[#050B16] bg-cyan-400 hover:bg-cyan-300 transition-colors shadow-sm shadow-cyan-400/20"
             >
-              <Compass size={16} />
-              <span>{activeSection === 'events' ? 'Enter Challenge' : 'Explore Events'}</span>
+              <Compass size={15} />
+              <span>{activeSection === 'events' ? 'Quiz Arena' : 'Explore Events'}</span>
             </motion.button>
           </div>
 
           {/* Mobile Hamburger Toggle */}
-          <div className="flex md:hidden items-center gap-2">
+          <div className="flex lg:hidden items-center gap-2">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white"
@@ -205,28 +294,33 @@ export default function Navbar({
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25, ease: 'easeInOut' }}
-            className="md:hidden border-t border-slate-800 bg-[#050B16]/98 backdrop-blur-2xl overflow-hidden"
+            className="lg:hidden border-t border-slate-800 bg-[#050B16]/98 backdrop-blur-2xl overflow-hidden"
           >
-            <div className="max-w-7xl mx-auto px-4 py-5 space-y-2.5">
-              {navLinks.map((item) => {
-                const isActive = activeSection === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => handleNav(item.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                      isActive
-                        ? 'text-cyan-300 bg-cyan-500/10 border border-cyan-500/25'
-                        : 'text-slate-300 hover:bg-slate-800/60'
-                    }`}
-                  >
-                    <span className={isActive ? 'text-cyan-400' : 'text-slate-400'}>
-                      {item.icon}
-                    </span>
-                    <span>{item.label}</span>
-                  </button>
-                );
-              })}
+            <div className="max-w-7xl mx-auto px-4 py-5 space-y-2">
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block px-2 font-mono">
+                ALL 8 CLUB MODULES
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {allMobileNavLinks.map((item) => {
+                  const isActive = activeSection === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleNav(item.id)}
+                      className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                        isActive
+                          ? 'text-cyan-300 bg-cyan-500/10 border border-cyan-500/25'
+                          : 'text-slate-300 hover:bg-slate-800/60'
+                      }`}
+                    >
+                      <span className={isActive ? 'text-cyan-400' : 'text-slate-400'}>
+                        {item.icon}
+                      </span>
+                      <span>{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
 
               <div className="pt-4 border-t border-slate-800 flex flex-col gap-2.5">
                 <button

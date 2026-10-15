@@ -139,15 +139,178 @@ export function generateDemoData(): AppState {
     { eventId: events[1].id, participantId: participants[5].id, status: 'absent' as const, markedAt: new Date(now.getTime() - 3600000).toISOString() },
   ];
 
-  // Activities
-  const activities = [
-    { id: generateId(), type: 'quiz' as const, message: `${participants[1].name} scored 9/10 — Top scorer!`, timestamp: new Date(now.getTime() - 86400000).toISOString() },
-    { id: generateId(), type: 'registration' as const, message: `${participants[7].name} registered for Probability Seminar`, timestamp: new Date(now.getTime() - 86400000).toISOString() },
-    { id: generateId(), type: 'quiz' as const, message: `${participants[4].name} completed the Mathematics Quiz`, timestamp: new Date(now.getTime() - 3600000).toISOString() },
-    { id: generateId(), type: 'event' as const, message: 'Inter-College Math Olympiad created', timestamp: new Date(now.getTime() - 86400000 * 2).toISOString() },
-    { id: generateId(), type: 'attendance' as const, message: 'Attendance marked for Pi Day Celebration', timestamp: new Date(now.getTime() - 86400000).toISOString() },
-    { id: generateId(), type: 'registration' as const, message: `${participants[0].name} registered for Number Theory Workshop`, timestamp: new Date(now.getTime() - 86400000 * 3).toISOString() },
+  // Members (6 members, varied roles & departments)
+  const members = [
+    {
+      id: generateId(),
+      name: 'Arjun Mehta',
+      email: 'arjun.m@university.edu',
+      department: 'Mathematics & Computing',
+      year: '3rd Year',
+      role: 'President' as const,
+      status: 'Active' as const,
+      joinedAt: new Date(now.getTime() - 86400000 * 180).toISOString(),
+    },
+    {
+      id: generateId(),
+      name: 'Priya Sharma',
+      email: 'priya.s@university.edu',
+      department: 'Mathematics & Computing',
+      year: '3rd Year',
+      role: 'Coordinator' as const,
+      status: 'Active' as const,
+      joinedAt: new Date(now.getTime() - 86400000 * 150).toISOString(),
+    },
+    {
+      id: generateId(),
+      name: 'Sneha Gupta',
+      email: 'sneha.g@university.edu',
+      department: 'Computer Science & AI',
+      year: '2nd Year',
+      role: 'Core Team' as const,
+      status: 'Active' as const,
+      joinedAt: new Date(now.getTime() - 86400000 * 90).toISOString(),
+    },
+    {
+      id: generateId(),
+      name: 'Rohan Das',
+      email: 'rohan.d@university.edu',
+      department: 'Electronics & Communication',
+      year: '2nd Year',
+      role: 'Core Team' as const,
+      status: 'Active' as const,
+      joinedAt: new Date(now.getTime() - 86400000 * 85).toISOString(),
+    },
+    {
+      id: generateId(),
+      name: 'Kabir Patel',
+      email: 'kabir.p@university.edu',
+      department: 'Mechanical Engineering',
+      year: '1st Year',
+      role: 'Member' as const,
+      status: 'Active' as const,
+      joinedAt: new Date(now.getTime() - 86400000 * 30).toISOString(),
+    },
+    {
+      id: generateId(),
+      name: 'Ananya Reddy',
+      email: 'ananya.r@university.edu',
+      department: 'Data Science & Analytics',
+      year: '1st Year',
+      role: 'Member' as const,
+      status: 'Inactive' as const,
+      joinedAt: new Date(now.getTime() - 86400000 * 20).toISOString(),
+    },
   ];
 
-  return { participants, events, quizAttempts, attendance, activities };
+  // Certificates (4 certificates across events)
+  const certificates = [
+    {
+      id: generateId(),
+      participantName: 'Priya Sharma',
+      eventId: events[3].id, // Inter-College Math Olympiad
+      type: 'Winner' as const,
+      issuedAt: new Date(now.getTime() - 86400000 * 2).toISOString(),
+      certificateCode: 'MCN-2026-0001',
+    },
+    {
+      id: generateId(),
+      participantName: 'Arjun Mehta',
+      eventId: events[3].id, // Inter-College Math Olympiad
+      type: 'Runner-up' as const,
+      issuedAt: new Date(now.getTime() - 86400000 * 2).toISOString(),
+      certificateCode: 'MCN-2026-0002',
+    },
+    {
+      id: generateId(),
+      participantName: 'Sneha Gupta',
+      eventId: events[0].id, // Pi Day Celebration
+      type: 'Participation' as const,
+      issuedAt: new Date(now.getTime() - 86400000).toISOString(),
+      certificateCode: 'MCN-2026-0003',
+    },
+    {
+      id: generateId(),
+      participantName: 'Priya Sharma',
+      eventId: events[1].id, // Number Theory Workshop
+      type: 'Quiz Excellence' as const,
+      issuedAt: new Date(now.getTime() - 3600000 * 6).toISOString(),
+      certificateCode: 'MCN-2026-0004',
+    },
+  ];
+
+  // Feedback (6 entries across events)
+  const feedback = [
+    {
+      id: generateId(),
+      eventId: events[0].id,
+      participantName: 'Priya Sharma',
+      rating: 5,
+      categoryRatings: { content: 5, organization: 5, difficulty: 4 },
+      comment: 'Incredible puzzle stations and the pi digit recitation contest was thrilling! Perfectly organized.',
+      anonymous: false,
+      submittedAt: new Date(now.getTime() - 86400000).toISOString(),
+    },
+    {
+      id: generateId(),
+      eventId: events[0].id,
+      participantName: 'Sneha Gupta',
+      rating: 5,
+      categoryRatings: { content: 5, organization: 4, difficulty: 3 },
+      comment: 'Loved the teamwork aspect in the mathematical relay. The refreshments and venue setup were great.',
+      anonymous: false,
+      submittedAt: new Date(now.getTime() - 86400000 * 2).toISOString(),
+    },
+    {
+      id: generateId(),
+      eventId: events[1].id,
+      participantName: 'Arjun Mehta',
+      rating: 5,
+      categoryRatings: { content: 5, organization: 5, difficulty: 5 },
+      comment: "The rigorous proofs of Fermat's Little Theorem and RSA cryptosystem connections were masterfully delivered.",
+      anonymous: false,
+      submittedAt: new Date(now.getTime() - 3600000 * 8).toISOString(),
+    },
+    {
+      id: generateId(),
+      eventId: events[1].id,
+      participantName: 'Kabir Patel',
+      rating: 4,
+      categoryRatings: { content: 4, organization: 4, difficulty: 4 },
+      comment: 'Deep dive into prime factorization algorithms. A slightly slower pace on modular inverses would help newcomers.',
+      anonymous: false,
+      submittedAt: new Date(now.getTime() - 3600000 * 5).toISOString(),
+    },
+    {
+      id: generateId(),
+      eventId: events[2].id,
+      participantName: 'Diya Iyer',
+      rating: 5,
+      categoryRatings: { content: 5, organization: 5, difficulty: 4 },
+      comment: 'Superb guest lecture on Bayesian inference and machine learning models. High academic caliber!',
+      anonymous: false,
+      submittedAt: new Date(now.getTime() - 86400000 * 3).toISOString(),
+    },
+    {
+      id: generateId(),
+      eventId: events[3].id,
+      rating: 4,
+      categoryRatings: { content: 5, organization: 4, difficulty: 5 },
+      comment: 'Demanding and rewarding olympiad problems! Well-audited timers and transparent scoring.',
+      anonymous: true,
+      submittedAt: new Date(now.getTime() - 86400000 * 2).toISOString(),
+    },
+  ];
+
+  // Activities
+  const activities = [
+    { id: generateId(), type: 'certificate' as const, message: 'Winner Certificate (MCN-2026-0001) issued to Priya Sharma', timestamp: new Date(now.getTime() - 3600000 * 2).toISOString() },
+    { id: generateId(), type: 'feedback' as const, message: 'New 5★ review submitted for Pi Day Celebration', timestamp: new Date(now.getTime() - 3600000 * 4).toISOString() },
+    { id: generateId(), type: 'member' as const, message: 'Arjun Mehta assigned role President (Mathematics & Computing)', timestamp: new Date(now.getTime() - 86400000).toISOString() },
+    { id: generateId(), type: 'quiz' as const, message: `${participants[1].name} scored 9/10 — Top scorer!`, timestamp: new Date(now.getTime() - 86400000).toISOString() },
+    { id: generateId(), type: 'registration' as const, message: `${participants[7].name} registered for Probability Seminar`, timestamp: new Date(now.getTime() - 86400000).toISOString() },
+    { id: generateId(), type: 'attendance' as const, message: 'Attendance marked for Pi Day Celebration', timestamp: new Date(now.getTime() - 86400000).toISOString() },
+  ];
+
+  return { participants, events, quizAttempts, attendance, activities, members, certificates, feedback };
 }

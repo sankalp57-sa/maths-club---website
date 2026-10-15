@@ -2,7 +2,21 @@
 // MathClub Nexus — LocalStorage Persistence Layer
 // ============================================================
 
-import type { AppState, Participant, Event, QuizAttempt, AttendanceRecord, ActivityItem } from '../types';
+import type {
+  AppState,
+  Participant,
+  Event,
+  QuizAttempt,
+  AttendanceRecord,
+  ActivityItem,
+  Member,
+  Certificate,
+  Feedback,
+  MemberRole,
+  MemberStatus,
+  CertificateType,
+  FeedbackCategoryRatings,
+} from '../types';
 
 const STORAGE_KEY = 'mathclub_nexus_data';
 
@@ -12,6 +26,9 @@ const defaultState: AppState = {
   quizAttempts: [],
   attendance: [],
   activities: [],
+  members: [],
+  certificates: [],
+  feedback: [],
 };
 
 function generateId(): string {
@@ -23,13 +40,16 @@ function loadState(): AppState {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return { ...defaultState };
     const parsed = JSON.parse(raw);
-    // Validate structure
+    // Validate structure & safely migrate missing collections
     return {
       participants: Array.isArray(parsed.participants) ? parsed.participants : [],
       events: Array.isArray(parsed.events) ? parsed.events : [],
       quizAttempts: Array.isArray(parsed.quizAttempts) ? parsed.quizAttempts : [],
       attendance: Array.isArray(parsed.attendance) ? parsed.attendance : [],
       activities: Array.isArray(parsed.activities) ? parsed.activities : [],
+      members: Array.isArray(parsed.members) ? parsed.members : [],
+      certificates: Array.isArray(parsed.certificates) ? parsed.certificates : [],
+      feedback: Array.isArray(parsed.feedback) ? parsed.feedback : [],
     };
   } catch {
     localStorage.removeItem(STORAGE_KEY);
@@ -235,6 +255,228 @@ export function getAttendanceForEvent(eventId: string): AttendanceRecord[] {
   return loadState().attendance.filter(a => a.eventId === eventId);
 }
 
+// ============================================================
+// Member Management Helpers
+// ============================================================
+
+export function addMember(member: {
+  name: string;
+  email: string;
+  department: string;
+  year: string;
+  role: MemberRole;
+  status: MemberStatus;
+}): { success: boolean; message: string; member?: Member } {
+  const state = loadState();
+  const emailNorm = member.email.trim().toLowerCase();
+  if (state.members.some(m => m.email.trim().toLowerCase() === emailNorm)) {
+    return { success: false, message: 'A member with this email address already exists in the club directory' };
+  }
+  const newMember: Member = {
+    id: generateId(),
+    name: member.name.trim(),
+    email: member.email.trim(),
+    department: member.department.trim(),
+    year: member.year,
+    role: member.role,
+    status: member.status,
+    joinedAt: new Date().toISOString(),
+  };
+  state.members.push(newMember);
+  addActivity(state, 'member', `${newMember.name} joined as ${newMember.role} (${newMember.department})`);
+  saveState(state);
+  return { success: true, message: `Member "${newMember.name}" successfully registered`, member: newMember };
+}
+
+export function updateMember(
+  id: string,
+  updates: Partial<Pick<Member, 'name' | 'email' | 'department' | 'year' | 'role' | 'status'>>
+): { success: boolean; message: string; member?: Member } {
+  const state = loadState();
+  const idx = state.members.findIndex(m => m.id === id);
+  if (idx === -1) return { success: false, message: 'Member record not found' };
+
+  if (updates.email) {
+    const emailNorm = updates.email.trim().toLowerCase();
+    if (state.members.some(m => m.id !== id && m.email.trim().toLowerCase() === emailNorm)) {
+      return { success: false, message: 'Another member is already registered with this email address' };
+    }
+  }
+
+  state.members[idx] = { ...state.members[idx], ...updates };
+  addActivity(state, 'member', `Member directory record for ${state.members[idx].name} updated`);
+  saveState(state);
+  return { success: true, message: 'Member profile updated successfully', member: state.members[idx] };
+}
+
+export function toggleMemberStatus(id: string): { success: boolean; message: string; member?: Member } {
+  const state = loadState();
+  const idx = state.members.findIndex(m => m.id === id);
+  if (idx === -1) return { success: false, message: 'Member not found' };
+  const newStatus: MemberStatus = state.members[idx].status === 'Active' ? 'Inactive' : 'Active';
+  state.members[idx].status = newStatus;
+  addActivity(state, 'member', `${state.members[idx].name} status updated to ${newStatus}`);
+  saveState(state);
+  return { success: true, message: `Member status toggled to ${newStatus}`, member: state.members[idx] };
+}
+
+export function deleteMember(id: string): boolean {
+  const state = loadState();
+  const idx = state.members.findIndex(m => m.id === id);
+  if (idx === -1) return false;
+  const name = state.members[idx].name;
+  state.members.splice(idx, 1);
+  addActivity(state, 'member', `Member ${name} removed from registry`);
+  saveState(state);
+  return true;
+}
+
+// ============================================================
+// Certificate Management Helpers
+// ============================================================
+
+export function generateCertificateCode(existingCount: number): string {
+  const year = new Date().getFullYear();
+  const seq = String(existingCount + 1).padStart(4, '0');
+  return `MCN-${year}-${seq}`;
+}
+
+export function issueCertificate(
+  participantName: string,
+  eventId: string,
+  type: CertificateType
+): { success: boolean; message: string; certificate?: Certificate } {
+  const state = loadState();
+  const normName = participantName.trim().toLowerCase();
+  const duplicate = state.certificates.some(
+    c => c.eventId === eventId && c.type === type && c.participantName.trim().toLowerCase() === normName
+  );
+  if (duplicate) {
+    return { success: false, message: `A ${type} certificate has already been issued to ${participantName} for this event` };
+  }
+
+  const code = generateCertificateCode(state.certificates.length);
+  const certificate: Certificate = {
+    id: generateId(),
+    participantName: participantName.trim(),
+    eventId,
+    type,
+    issuedAt: new Date().toISOString(),
+    certificateCode: code,
+  };
+  state.certificates.unshift(certificate);
+  addActivity(state, 'certificate', `Issued ${type} Certificate (${code}) to ${participantName.trim()}`);
+  saveState(state);
+  return { success: true, message: `Certificate issued successfully (${code})`, certificate };
+}
+
+export function issueCertificatesBatch(
+  items: Array<{ participantName: string; eventId: string; type: CertificateType }>
+): { count: number; skipped: number } {
+  const state = loadState();
+  let count = 0;
+  let skipped = 0;
+
+  for (const item of items) {
+    const normName = item.participantName.trim().toLowerCase();
+    const duplicate = state.certificates.some(
+      c => c.eventId === item.eventId && c.type === item.type && c.participantName.trim().toLowerCase() === normName
+    );
+    if (duplicate) {
+      skipped++;
+      continue;
+    }
+
+    const code = generateCertificateCode(state.certificates.length + count);
+    const certificate: Certificate = {
+      id: generateId(),
+      participantName: item.participantName.trim(),
+      eventId: item.eventId,
+      type: item.type,
+      issuedAt: new Date().toISOString(),
+      certificateCode: code,
+    };
+    state.certificates.unshift(certificate);
+    count++;
+  }
+
+  if (count > 0) {
+    addActivity(state, 'certificate', `Batch issued ${count} certificates to eligible scholars`);
+    saveState(state);
+  }
+  return { count, skipped };
+}
+
+export function revokeCertificate(id: string): boolean {
+  const state = loadState();
+  const idx = state.certificates.findIndex(c => c.id === id);
+  if (idx === -1) return false;
+  const cert = state.certificates[idx];
+  state.certificates.splice(idx, 1);
+  addActivity(state, 'certificate', `Revoked ${cert.type} certificate (${cert.certificateCode}) for ${cert.participantName}`);
+  saveState(state);
+  return true;
+}
+
+export function verifyCertificate(code: string): { valid: boolean; certificate?: Certificate; event?: Event } {
+  const state = loadState();
+  const cert = state.certificates.find(c => c.certificateCode.trim().toUpperCase() === code.trim().toUpperCase());
+  if (!cert) return { valid: false };
+  const event = state.events.find(e => e.id === cert.eventId);
+  return { valid: true, certificate: cert, event };
+}
+
+// ============================================================
+// Feedback Collection Helpers
+// ============================================================
+
+export function addFeedback(feedback: {
+  eventId: string;
+  participantName?: string;
+  rating: number;
+  categoryRatings: FeedbackCategoryRatings;
+  comment: string;
+  anonymous: boolean;
+}): { success: boolean; message: string; feedback?: Feedback } {
+  const state = loadState();
+  const event = state.events.find(e => e.id === feedback.eventId);
+  if (!event) {
+    return { success: false, message: 'Invalid event specified' };
+  }
+
+  // Validate 1 feedback per participant per event when not anonymous
+  if (!feedback.anonymous && feedback.participantName) {
+    const normName = feedback.participantName.trim().toLowerCase();
+    const duplicate = state.feedback.some(
+      f => f.eventId === feedback.eventId && !f.anonymous && f.participantName?.trim().toLowerCase() === normName
+    );
+    if (duplicate) {
+      return { success: false, message: 'You have already submitted feedback for this event' };
+    }
+  }
+
+  const newFeedback: Feedback = {
+    id: generateId(),
+    eventId: feedback.eventId,
+    participantName: feedback.anonymous ? undefined : feedback.participantName?.trim(),
+    rating: Math.max(1, Math.min(5, feedback.rating)),
+    categoryRatings: {
+      content: Math.max(1, Math.min(5, feedback.categoryRatings.content)),
+      organization: Math.max(1, Math.min(5, feedback.categoryRatings.organization)),
+      difficulty: Math.max(1, Math.min(5, feedback.categoryRatings.difficulty)),
+    },
+    comment: feedback.comment.trim(),
+    anonymous: feedback.anonymous,
+    submittedAt: new Date().toISOString(),
+  };
+
+  state.feedback.unshift(newFeedback);
+  const author = feedback.anonymous ? 'Anonymous Scholar' : (feedback.participantName || 'Scholar');
+  addActivity(state, 'feedback', `${author} submitted ${feedback.rating}★ feedback for "${event.name}"`);
+  saveState(state);
+  return { success: true, message: 'Thank you! Your feedback has been recorded successfully.', feedback: newFeedback };
+}
+
 // Activity feed
 function addActivity(state: AppState, type: ActivityItem['type'], message: string): void {
   state.activities.unshift({
@@ -247,6 +489,12 @@ function addActivity(state: AppState, type: ActivityItem['type'], message: strin
   if (state.activities.length > 50) {
     state.activities = state.activities.slice(0, 50);
   }
+}
+
+export function logActivity(type: ActivityItem['type'], message: string): void {
+  const state = loadState();
+  addActivity(state, type, message);
+  saveState(state);
 }
 
 export { generateId };

@@ -14,6 +14,9 @@ import EventsPage from './pages/Events';
 import QuizPage from './pages/Quiz';
 import Leaderboard from './pages/Leaderboard';
 import AttendancePage from './pages/Attendance';
+import MembersPage from './pages/Members';
+import CertificatesPage from './pages/Certificates';
+import FeedbackPage from './pages/Feedback';
 
 import { motion, AnimatePresence } from 'motion/react';
 import MathParticleField from './components/MathParticleField';
@@ -32,7 +35,10 @@ function AppContent() {
     const demoData = generateDemoData();
     localStorage.setItem('mathclub_nexus_data', JSON.stringify(demoData));
     refreshData();
-    showToast('info', 'Demo data synchronized: 8 participants, 4 events, 6 quiz records');
+    showToast(
+      'info',
+      'Demo data synchronized: 8 participants, 4 events, 6 members, 4 certificates, 6 reviews'
+    );
   };
 
   const handleReset = () => {
@@ -53,6 +59,12 @@ function AppContent() {
         return <Leaderboard data={data} />;
       case 'attendance':
         return <AttendancePage data={data} onDataChange={refreshData} />;
+      case 'members':
+        return <MembersPage data={data} onDataChange={refreshData} />;
+      case 'certificates':
+        return <CertificatesPage data={data} onDataChange={refreshData} />;
+      case 'feedback':
+        return <FeedbackPage data={data} onDataChange={refreshData} />;
       default:
         return <Dashboard data={data} onNavigate={setActiveSection} />;
     }

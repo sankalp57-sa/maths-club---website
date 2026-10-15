@@ -39,7 +39,7 @@ export default function Footer({ onNavigate }: FooterProps) {
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">
               Explore Modules
             </h4>
-            <ul className="space-y-3 text-sm">
+            <ul className="space-y-2.5 text-sm">
               <li>
                 <button
                   onClick={() => onNavigate('dashboard')}
@@ -78,6 +78,30 @@ export default function Footer({ onNavigate }: FooterProps) {
                   className="hover:text-cyan-400 transition-colors"
                 >
                   Attendance Verification Portal
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onNavigate('members')}
+                  className="hover:text-cyan-400 transition-colors"
+                >
+                  Member Roster & Governance
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onNavigate('certificates')}
+                  className="hover:text-cyan-400 transition-colors"
+                >
+                  Certificate Distribution System
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onNavigate('feedback')}
+                  className="hover:text-cyan-400 transition-colors"
+                >
+                  Feedback & Quality Analytics
                 </button>
               </li>
             </ul>

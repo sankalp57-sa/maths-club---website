@@ -17,6 +17,9 @@ import {
   Activity,
   Award,
   Crown,
+  Star,
+  MessageSquare,
+  ShieldCheck,
 } from 'lucide-react';
 import type { AppState, NavSection, Event } from '../types';
 import InteractiveMathVisual from '../components/InteractiveMathVisual';
@@ -49,12 +52,27 @@ export default function Dashboard({ data, onNavigate }: DashboardProps) {
       totalAttendance > 0
         ? Math.round((presentCount / totalAttendance) * 100)
         : 0;
+    const totalMembers = data.members?.length || 0;
+    const certificatesIssued = data.certificates?.length || 0;
+    const feedbackCount = data.feedback?.length || 0;
+    const avgFeedback =
+      feedbackCount > 0
+        ? Number(
+            (
+              data.feedback.reduce((sum, f) => sum + f.rating, 0) /
+              feedbackCount
+            ).toFixed(1)
+          )
+        : 5.0;
 
     return {
       totalParticipants,
       upcomingEvents,
       quizzesTaken,
       attendanceRate,
+      totalMembers,
+      certificatesIssued,
+      avgFeedback,
     };
   }, [data]);
 
@@ -354,6 +372,87 @@ export default function Dashboard({ data, onNavigate }: DashboardProps) {
               </p>
             </motion.div>
           </motion.div>
+
+          {/* Compact Row for Unified Club Modules */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6">
+            {/* Members Module Card */}
+            <motion.div
+              variants={itemFadeIn}
+              whileHover={shouldReduceMotion ? {} : { y: -6 }}
+              onClick={() => onNavigate('members')}
+              className="cursor-pointer rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800/80 hover:border-cyan-500/40 hover:shadow-[0_0_30px_rgba(34,211,238,0.25)] transition-all duration-200 group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider group-hover:text-cyan-300 transition-colors">
+                  Club Members
+                </span>
+                <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+                  <Users size={16} />
+                </div>
+              </div>
+              <div className="flex items-baseline gap-2 mt-3 font-mono">
+                <span className="text-2xl sm:text-3xl font-extrabold text-white">
+                  <AnimatedCounter value={stats.totalMembers} />
+                </span>
+                <span className="text-xs text-cyan-400 font-sans font-semibold">Active Roster →</span>
+              </div>
+              <p className="text-xs text-slate-400 mt-2">
+                Registered scholars across academic faculties
+              </p>
+            </motion.div>
+
+            {/* Certificates Module Card */}
+            <motion.div
+              variants={itemFadeIn}
+              whileHover={shouldReduceMotion ? {} : { y: -6 }}
+              onClick={() => onNavigate('certificates')}
+              className="cursor-pointer rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800/80 hover:border-amber-500/40 hover:shadow-[0_0_30px_rgba(245,158,11,0.25)] transition-all duration-200 group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider group-hover:text-amber-300 transition-colors">
+                  Certificates Issued
+                </span>
+                <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
+                  <Award size={16} />
+                </div>
+              </div>
+              <div className="flex items-baseline gap-2 mt-3 font-mono">
+                <span className="text-2xl sm:text-3xl font-extrabold text-white">
+                  <AnimatedCounter value={stats.certificatesIssued} />
+                </span>
+                <span className="text-xs text-amber-400 font-sans font-semibold">Verified Codes →</span>
+              </div>
+              <p className="text-xs text-slate-400 mt-2">
+                Authenticated collegiate credentials & merit honors
+              </p>
+            </motion.div>
+
+            {/* Feedback Module Card */}
+            <motion.div
+              variants={itemFadeIn}
+              whileHover={shouldReduceMotion ? {} : { y: -6 }}
+              onClick={() => onNavigate('feedback')}
+              className="cursor-pointer rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800/80 hover:border-teal-500/40 hover:shadow-[0_0_30px_rgba(20,184,166,0.25)] transition-all duration-200 group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider group-hover:text-teal-300 transition-colors">
+                  Avg Feedback Rating
+                </span>
+                <div className="w-8 h-8 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400 group-hover:scale-110 transition-transform">
+                  <Star size={16} fill="currentColor" />
+                </div>
+              </div>
+              <div className="flex items-baseline gap-2 mt-3 font-mono">
+                <span className="text-2xl sm:text-3xl font-extrabold text-white">
+                  {stats.avgFeedback}
+                </span>
+                <span className="text-xs text-teal-400 font-sans font-semibold">/ 5.0 Rating →</span>
+              </div>
+              <p className="text-xs text-slate-400 mt-2">
+                Aggregated workshop assessments & appraisals
+              </p>
+            </motion.div>
+          </div>
         </MotionSection>
       </Section>
 

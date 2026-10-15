@@ -50,9 +50,51 @@ export interface AttendanceRecord {
 
 export interface ActivityItem {
   id: string;
-  type: 'registration' | 'quiz' | 'attendance' | 'event';
+  type: 'registration' | 'quiz' | 'attendance' | 'event' | 'member' | 'certificate' | 'feedback';
   message: string;
   timestamp: string;
+}
+
+export type MemberRole = 'Member' | 'Core Team' | 'Coordinator' | 'President';
+export type MemberStatus = 'Active' | 'Inactive';
+
+export interface Member {
+  id: string;
+  name: string;
+  email: string;
+  department: string;
+  year: string;
+  role: MemberRole;
+  status: MemberStatus;
+  joinedAt: string;
+}
+
+export type CertificateType = 'Participation' | 'Winner' | 'Runner-up' | 'Quiz Excellence';
+
+export interface Certificate {
+  id: string;
+  participantName: string;
+  eventId: string;
+  type: CertificateType;
+  issuedAt: string;
+  certificateCode: string; // e.g. MCN-2026-0001
+}
+
+export interface FeedbackCategoryRatings {
+  content: number;
+  organization: number;
+  difficulty: number;
+}
+
+export interface Feedback {
+  id: string;
+  eventId: string;
+  participantName?: string;
+  rating: number;
+  categoryRatings: FeedbackCategoryRatings;
+  comment: string;
+  anonymous: boolean;
+  submittedAt: string;
 }
 
 export interface AppState {
@@ -61,6 +103,17 @@ export interface AppState {
   quizAttempts: QuizAttempt[];
   attendance: AttendanceRecord[];
   activities: ActivityItem[];
+  members: Member[];
+  certificates: Certificate[];
+  feedback: Feedback[];
 }
 
-export type NavSection = 'dashboard' | 'events' | 'quiz' | 'leaderboard' | 'attendance';
+export type NavSection =
+  | 'dashboard'
+  | 'events'
+  | 'quiz'
+  | 'leaderboard'
+  | 'attendance'
+  | 'members'
+  | 'certificates'
+  | 'feedback';
