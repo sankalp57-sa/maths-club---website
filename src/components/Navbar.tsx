@@ -95,14 +95,9 @@ export default function Navbar({
           >
             <Logo size="navbar" interactive />
             <div>
-              <div className="flex items-center gap-2">
-                <span className="text-base sm:text-lg lg:text-xl font-extrabold text-white tracking-tight">
-                  MathClub
-                </span>
-                <span className="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-                  NEXUS
-                </span>
-              </div>
+              <span className="text-base sm:text-lg lg:text-xl font-extrabold text-white tracking-tight">
+                MathClub
+              </span>
               <p className="text-[9px] sm:text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em]">
                 MATHEMATICS CLUB PORTAL
               </p>
