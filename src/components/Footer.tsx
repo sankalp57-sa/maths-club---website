@@ -4,7 +4,7 @@
 
 import { Code, Award } from 'lucide-react';
 import type { NavSection } from '../types';
-import MathClubLogo from './MathClubLogo';
+import Logo from './Logo';
 
 interface FooterProps {
   onNavigate: (section: NavSection) => void;
@@ -19,15 +19,10 @@ export default function Footer({ onNavigate }: FooterProps) {
           {/* Column 1: Brand & Mission */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <MathClubLogo className="w-10 h-10" />
-              <div>
-                <span className="text-lg font-bold text-white tracking-tight block">
-                  Mathematics Club
-                </span>
-                <p className="text-[10px] font-semibold text-cyan-400 uppercase tracking-[0.18em]">
-                  MITS-DU Gwalior
-                </p>
-              </div>
+              <Logo size="footer" />
+              <span className="text-lg font-bold text-white tracking-tight">
+                MathClub Nexus
+              </span>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed max-w-sm">
               The premier collegiate mathematics club platform. Orchestrating competitive math olympiads, student research colloquia, automated quiz leaderboards, and transparent participation auditing.

@@ -9,13 +9,12 @@ import {
   Trophy,
   ClipboardCheck,
   X,
-  Sigma,
   ChevronLeft,
   ChevronRight,
   Sparkles,
 } from 'lucide-react';
 import type { NavSection } from '../types';
-import MathClubLogo from './MathClubLogo';
+import Logo from './Logo';
 
 interface SidebarProps {
   activeSection: NavSection;
@@ -54,7 +53,7 @@ export default function Sidebar({
       {/* Brand Header */}
       <div className={`p-4 border-b border-slate-800/80 flex items-center ${isCollapsed && !mobile ? 'justify-center' : 'justify-between'}`}>
         <div className="flex items-center gap-3 min-w-0">
-          <MathClubLogo className="w-9 h-9" />
+          <Logo size="h-9 w-9" />
           {(!isCollapsed || mobile) && (
             <div className="min-w-0">
               <h1 className="text-sm font-bold text-white tracking-tight truncate flex items-center gap-1.5">
