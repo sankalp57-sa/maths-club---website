@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+/* ============================================================
+   MathClub Nexus — Cinematic Midnight Navy & Cyan Design System
+   ============================================================ */
+
+:root {
+  --bg-midnight: #050B16;
+  --bg-card: rgba(11, 21, 40, 0.75);
+  --cyan-electric: #00D9F5;
+  --cyan-glow: rgba(0, 217, 245, 0.25);
+  --blue-accent: #3B82F6;
+}
+
+
+html {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #050B16;
+  color: #F8FAFC;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #050B16;
+  color: #E2E8F0;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050B16;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(30, 58, 102, 0.6);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 217, 245, 0.4);
+}
+
+/* Custom Keyframe Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(1deg); }
+}
+
+@keyframes cyanPulse {
+  0%, 100% {
+    box-shadow: 0 0 15px -3px rgba(0, 217, 245, 0.3), 0 0 6px -2px rgba(0, 217, 245, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 25px 2px rgba(0, 217, 245, 0.5), 0 0 10px 0px rgba(0, 217, 245, 0.3);
+  }
+}
+
+@keyframes waveMotion {
+  0% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: 1000; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-float {
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+.animate-cyan-pulse {
+  animation: cyanPulse 2.5s infinite;
+}
+
+/* Date input styling for midnight theme */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8) hue-rotate(160deg);
+  cursor: pointer;
+}
+
+/* Number input styling */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 0.4;
+}
+
+/* Line clamp utility */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Selection color */
+::selection {
+  background-color: rgba(0, 217, 245, 0.3);
+  color: #FFFFFF;
+}
+
+/* Card glass styles */
+.glass-panel {
+  background: rgba(11, 21, 40, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 217, 245, 0.12);
+}
+
+.glass-panel-hover {
+  transition: all 0.25s ease;
+}
+
+.glass-panel-hover:hover {
+  border-color: rgba(0, 217, 245, 0.35);
+  box-shadow: 0 10px 30px -10px rgba(0, 217, 245, 0.15);
+  transform: translateY(-2px);
+}
