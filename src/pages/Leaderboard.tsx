@@ -11,13 +11,11 @@ import {
   Award,
   Sparkles,
   Info,
-  Timer,
-  CheckCircle2,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import type { AppState } from '../types';
 import AnimatedCounter from '../components/AnimatedCounter';
-import { cinematicEase, springBouncy, springSmooth } from '../motion/motionTokens';
+import { cinematicEase } from '../motion/motionTokens';
 import Section from '../components/Section';
 
 interface LeaderboardProps {
@@ -27,12 +25,14 @@ interface LeaderboardProps {
 export default function Leaderboard({ data }: LeaderboardProps) {
   const [search, setSearch] = useState('');
 
-  // Sorted rankings: score descending, then time ascending
+  // Sorted rankings: score descending, then time ascending (exclude 0-score entries from champions podium)
   const allRankings = useMemo(() => {
-    return [...data.quizAttempts].sort((a, b) => {
-      if (b.score !== a.score) return b.score - a.score;
-      return a.timeTakenSeconds - b.timeTakenSeconds;
-    });
+    return [...data.quizAttempts]
+      .filter((attempt) => attempt.score > 0)
+      .sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return a.timeTakenSeconds - b.timeTakenSeconds;
+      });
   }, [data.quizAttempts]);
 
   // Filtered rankings
@@ -81,7 +81,7 @@ export default function Leaderboard({ data }: LeaderboardProps) {
   }, [topThree]);
 
   return (
-    <Section className="space-y-16 lg:space-y-20 text-slate-100 !py-0">
+    <Section className="space-y-16 lg:space-y-20 text-slate-100">
       {/* ============================================================
           HEADER — Hall of Champions
          ============================================================ */}
@@ -89,13 +89,13 @@ export default function Leaderboard({ data }: LeaderboardProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: cinematicEase }}
-        className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-slate-800/80"
+        className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-slate-800/80 mb-10"
       >
-        <div className="space-y-2">
-          <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest block font-mono">
+        <div>
+          <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest block font-mono mb-3">
             ACADEMIC HONORS & ARCHIVE
           </span>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight mb-4">
             Hall of Champions
           </h1>
           <p className="text-slate-300 text-sm sm:text-base max-w-2xl leading-relaxed">
@@ -104,7 +104,7 @@ export default function Leaderboard({ data }: LeaderboardProps) {
         </div>
 
         {/* Prototype disclosure pill */}
-        <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#0A1224] border border-slate-800 text-xs text-slate-400 font-mono flex-shrink-0">
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full whitespace-nowrap bg-[#0A1224] border border-slate-800 text-xs text-slate-400 font-mono flex-shrink-0">
           <Info size={14} className="text-cyan-400" />
           <span>Demo Prototype Standings</span>
         </div>
@@ -114,11 +114,12 @@ export default function Leaderboard({ data }: LeaderboardProps) {
           PODIUM VISUAL FOR TOP 3 (ANIMATED ENTRANCE)
          ============================================================ */}
       {topThree.length > 0 && (
-        <section className="space-y-6">
-          <div className="text-center space-y-1">
-            <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest block font-mono">
+        <section className="space-y-6 mb-12">
+          <div className="text-center mb-8">
+            <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest block font-mono mb-3">
               OLYMPIAD PEDESTAL
             </span>
+            <h2 className="text-2xl font-bold text-white mb-2">Semester Champions</h2>
             <p className="text-sm text-slate-400">Top mathematical scholars of the current semester</p>
           </div>
 
@@ -144,7 +145,7 @@ export default function Leaderboard({ data }: LeaderboardProps) {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ duration: 0.7, delay, ease: cinematicEase }}
                   whileHover={{ y: isFirst ? -18 : -8, transition: { duration: 0.25 } }}
-                  className={`rounded-3xl p-7 text-center relative overflow-hidden flex flex-col justify-between bg-[#0A1224]/85 border ${border} transition-colors shadow-2xl ${
+                  className={`rounded-3xl p-7 text-center relative overflow-hidden flex flex-col justify-between bg-[#0A1224]/85 border ${border} hover:shadow-[0_0_30px_rgba(34,211,238,0.25)] transition-all duration-200 shadow-2xl ${
                     isFirst ? 'md:-translate-y-4 ring-1 ring-amber-400/20' : ''
                   }`}
                 >
@@ -174,7 +175,7 @@ export default function Leaderboard({ data }: LeaderboardProps) {
                     </div>
 
                     <span
-                      className={`inline-block px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider ${
+                      className={`inline-block px-3 py-1 rounded-full whitespace-nowrap text-xs font-black uppercase tracking-wider ${
                         isFirst
                           ? 'bg-amber-400 text-slate-950 font-bold shadow-md shadow-amber-400/20'
                           : rank === 2
@@ -197,7 +198,7 @@ export default function Leaderboard({ data }: LeaderboardProps) {
                       <span className="text-slate-400 block font-medium">Sprint Score</span>
                       <span className="text-xl font-black text-cyan-400 font-mono mt-0.5 block">
                         <AnimatedCounter value={item.score} />
-                        <span className="text-slate-500 text-xs">/{item.totalQuestions}</span>
+                        <span className="text-slate-500 text-xs">/{item.totalQuestions || 10}</span>
                       </span>
                     </div>
                     <div className="h-8 w-px bg-slate-800" />
@@ -219,7 +220,7 @@ export default function Leaderboard({ data }: LeaderboardProps) {
           SEARCH & FULL RANKINGS DIRECTORY TABLE
          ============================================================ */}
       <section className="space-y-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <h3 className="text-xl font-bold text-white flex items-center gap-2">
             <Trophy size={18} className="text-cyan-400" />
             Complete Competitive Standing
@@ -241,11 +242,13 @@ export default function Leaderboard({ data }: LeaderboardProps) {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-16 rounded-3xl bg-[#0A1224]/50 border border-slate-800 text-slate-400 text-sm space-y-2"
+            className="text-center py-16 rounded-3xl bg-[#0A1224]/50 border border-slate-800 text-slate-400 text-sm space-y-3"
           >
-            <Trophy size={40} className="text-slate-600 mx-auto" />
+            <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-800 mx-auto flex items-center justify-center text-slate-600">
+              <Trophy size={26} />
+            </div>
             <p className="font-semibold text-white">No Rankings Found</p>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
               {search ? 'Try clearing your search term.' : 'Complete a sprint in the Quiz Arena to register the first score!'}
             </p>
           </motion.div>
@@ -265,16 +268,15 @@ export default function Leaderboard({ data }: LeaderboardProps) {
                 </thead>
                 <tbody className="divide-y divide-slate-800/60 font-medium">
                   {filteredRankings.map((attempt, index) => {
-                    const accuracy = Math.round((attempt.score / attempt.totalQuestions) * 100);
+                    const accuracy = Math.round((attempt.score / (attempt.totalQuestions || 10)) * 100);
                     const isTopThree = index < 3;
 
                     return (
                       <motion.tr
                         key={attempt.id}
-                        layout
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3, delay: Math.min(index * 0.04, 0.4) }}
+                        initial={{ opacity: 0, x: -12 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.35, delay: Math.min(index * 0.05, 0.4), ease: cinematicEase }}
                         className="hover:bg-slate-800/35 transition-colors"
                       >
                         {/* Standing Rank */}
@@ -311,13 +313,13 @@ export default function Leaderboard({ data }: LeaderboardProps) {
                           <span className="text-cyan-400 font-bold">
                             {attempt.score}
                           </span>
-                          <span className="text-slate-500">/{attempt.totalQuestions}</span>
+                          <span className="text-slate-500">/{attempt.totalQuestions || 10}</span>
                         </td>
 
                         {/* Accuracy */}
                         <td className="py-4 sm:py-4.5 px-4 sm:px-6 text-center">
                           <span
-                            className={`inline-block px-2.5 py-0.5 rounded text-xs font-semibold ${
+                            className={`inline-block px-3 py-1 rounded-full whitespace-nowrap text-xs font-semibold ${
                               accuracy >= 80
                                 ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20'
                                 : accuracy >= 50

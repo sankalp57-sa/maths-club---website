@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
 /* ============================================================
@@ -13,40 +12,56 @@
   --blue-accent: #3B82F6;
 }
 
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #050B16;
+    color: #F8FAFC;
+    scroll-behavior: smooth;
+  }
 
-html {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #050B16;
-  color: #F8FAFC;
-  scroll-behavior: smooth;
-}
+  body {
+    background-color: #050B16;
+    color: #E2E8F0;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-body {
-  background-color: #050B16;
-  color: #E2E8F0;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
+  ::selection {
+    background-color: rgba(0, 217, 245, 0.3);
+    color: #FFFFFF;
+  }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
 
-::-webkit-scrollbar-track {
-  background: #050B16;
-}
+  ::-webkit-scrollbar-track {
+    background: #050B16;
+  }
 
-::-webkit-scrollbar-thumb {
-  background: rgba(30, 58, 102, 0.6);
-  border-radius: 999px;
-}
+  ::-webkit-scrollbar-thumb {
+    background: rgba(30, 58, 102, 0.6);
+    border-radius: 999px;
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 217, 245, 0.4);
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 217, 245, 0.4);
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.8) hue-rotate(160deg);
+    cursor: pointer;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    opacity: 0.4;
+  }
 }
 
 /* Custom Keyframe Animations */
@@ -74,9 +89,9 @@ body {
   }
 }
 
-@keyframes waveMotion {
-  0% { stroke-dashoffset: 0; }
-  100% { stroke-dashoffset: 1000; }
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
 }
 
 .animate-fade-in {
@@ -95,33 +110,12 @@ body {
   animation: cyanPulse 2.5s infinite;
 }
 
-/* Date input styling for midnight theme */
-input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(0.8) hue-rotate(160deg);
-  cursor: pointer;
+.animate-shimmer {
+  background-size: 200% auto;
+  animation: shimmer 4.5s linear infinite;
 }
 
-/* Number input styling */
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  opacity: 0.4;
-}
-
-/* Line clamp utility */
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* Selection color */
-::selection {
-  background-color: rgba(0, 217, 245, 0.3);
-  color: #FFFFFF;
-}
-
-/* Card glass styles */
+/* Utility classes */
 .glass-panel {
   background: rgba(11, 21, 40, 0.7);
   backdrop-filter: blur(16px);

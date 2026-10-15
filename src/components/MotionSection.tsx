@@ -10,24 +10,31 @@ interface MotionSectionProps {
   children: React.ReactNode;
   className?: string;
   delay?: number;
+  id?: string;
 }
 
 export default function MotionSection({
   children,
   className = '',
   delay = 0,
+  id,
 }: MotionSectionProps) {
   const shouldReduceMotion = useReducedMotion();
 
   if (shouldReduceMotion) {
-    return <section className={className}>{children}</section>;
+    return (
+      <section id={id} className={className}>
+        {children}
+      </section>
+    );
   }
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 28 }}
+      id={id}
+      initial={{ opacity: 0, y: 32 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
+      viewport={{ once: true, margin: '-80px' }}
       transition={{
         duration: 0.75,
         delay,

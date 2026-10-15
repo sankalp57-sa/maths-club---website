@@ -35,7 +35,7 @@ export function generateDemoData(): AppState {
     {
       id: generateId(),
       name: 'Number Theory Workshop',
-      description: 'Deep dive into prime numbers, modular arithmetic, and Fermat\'s theorems. Bring your notebooks!',
+      description: "Deep dive into prime numbers, modular arithmetic, and Fermat's theorems. Bring your notebooks!",
       date: new Date(now.getTime() + 86400000 * 7).toISOString().split('T')[0],
       venue: 'Mathematics Lab, Room 203',
       capacity: 30,
@@ -64,14 +64,68 @@ export function generateDemoData(): AppState {
     },
   ];
 
-  // Quiz attempts
+  // Quiz attempts (10 questions total, realistic varied scores descending: 9/10, 8/10, 8/10, 7/10, 6/10, 5/10)
   const quizAttempts = [
-    { id: generateId(), participantId: participants[0].id, participantName: participants[0].name, score: 13, totalQuestions: 15, answers: [0,0,0,0,0,0,0,0,0,0,0,0,0,1,0], timeTakenSeconds: 420, completedAt: new Date(now.getTime() - 86400000 * 2).toISOString() },
-    { id: generateId(), participantId: participants[1].id, participantName: participants[1].name, score: 12, totalQuestions: 15, answers: [0,0,0,0,0,1,0,0,0,0,0,1,0,0,1], timeTakenSeconds: 380, completedAt: new Date(now.getTime() - 86400000 * 2).toISOString() },
-    { id: generateId(), participantId: participants[2].id, participantName: participants[2].name, score: 11, totalQuestions: 15, answers: [0,0,0,0,1,0,0,1,0,0,0,0,1,0,1], timeTakenSeconds: 500, completedAt: new Date(now.getTime() - 86400000).toISOString() },
-    { id: generateId(), participantId: participants[3].id, participantName: participants[3].name, score: 14, totalQuestions: 15, answers: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,1], timeTakenSeconds: 350, completedAt: new Date(now.getTime() - 86400000).toISOString() },
-    { id: generateId(), participantId: participants[4].id, participantName: participants[4].name, score: 10, totalQuestions: 15, answers: [0,0,1,0,0,0,1,0,1,0,0,0,1,0,1], timeTakenSeconds: 550, completedAt: new Date(now.getTime() - 3600000).toISOString() },
-    { id: generateId(), participantId: participants[5].id, participantName: participants[5].name, score: 12, totalQuestions: 15, answers: [0,0,0,0,0,0,0,0,1,0,1,0,0,0,1], timeTakenSeconds: 430, completedAt: new Date(now.getTime() - 3600000).toISOString() },
+    {
+      id: generateId(),
+      participantId: participants[1].id,
+      participantName: participants[1].name, // Priya Sharma (Gold: 9/10, 195s)
+      score: 9,
+      totalQuestions: 10,
+      answers: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      timeTakenSeconds: 195,
+      completedAt: new Date(now.getTime() - 86400000 * 2).toISOString(),
+    },
+    {
+      id: generateId(),
+      participantId: participants[0].id,
+      participantName: participants[0].name, // Arjun Mehta (Silver: 8/10, 210s)
+      score: 8,
+      totalQuestions: 10,
+      answers: [0, 0, 0, 0, 0, 1, 0, 0, 1, 0],
+      timeTakenSeconds: 210,
+      completedAt: new Date(now.getTime() - 86400000 * 2).toISOString(),
+    },
+    {
+      id: generateId(),
+      participantId: participants[3].id,
+      participantName: participants[3].name, // Sneha Gupta (Bronze: 8/10, 245s)
+      score: 8,
+      totalQuestions: 10,
+      answers: [0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+      timeTakenSeconds: 245,
+      completedAt: new Date(now.getTime() - 86400000).toISOString(),
+    },
+    {
+      id: generateId(),
+      participantId: participants[2].id,
+      participantName: participants[2].name, // Rohan Das (7/10, 260s)
+      score: 7,
+      totalQuestions: 10,
+      answers: [0, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+      timeTakenSeconds: 260,
+      completedAt: new Date(now.getTime() - 86400000).toISOString(),
+    },
+    {
+      id: generateId(),
+      participantId: participants[5].id,
+      participantName: participants[5].name, // Ananya Reddy (6/10, 280s)
+      score: 6,
+      totalQuestions: 10,
+      answers: [0, 1, 0, 0, 1, 0, 0, 1, 0, 1],
+      timeTakenSeconds: 280,
+      completedAt: new Date(now.getTime() - 3600000 * 4).toISOString(),
+    },
+    {
+      id: generateId(),
+      participantId: participants[4].id,
+      participantName: participants[4].name, // Kabir Patel (5/10, 295s)
+      score: 5,
+      totalQuestions: 10,
+      answers: [0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+      timeTakenSeconds: 295,
+      completedAt: new Date(now.getTime() - 3600000).toISOString(),
+    },
   ];
 
   // Attendance
@@ -87,11 +141,11 @@ export function generateDemoData(): AppState {
 
   // Activities
   const activities = [
-    { id: generateId(), type: 'quiz' as const, message: `${participants[3].name} scored 14/15 — Top scorer!`, timestamp: new Date(now.getTime() - 86400000).toISOString() },
+    { id: generateId(), type: 'quiz' as const, message: `${participants[1].name} scored 9/10 — Top scorer!`, timestamp: new Date(now.getTime() - 86400000).toISOString() },
     { id: generateId(), type: 'registration' as const, message: `${participants[7].name} registered for Probability Seminar`, timestamp: new Date(now.getTime() - 86400000).toISOString() },
     { id: generateId(), type: 'quiz' as const, message: `${participants[4].name} completed the Mathematics Quiz`, timestamp: new Date(now.getTime() - 3600000).toISOString() },
     { id: generateId(), type: 'event' as const, message: 'Inter-College Math Olympiad created', timestamp: new Date(now.getTime() - 86400000 * 2).toISOString() },
-    { id: generateId(), type: 'attendance' as const, message: `Attendance marked for Pi Day Celebration`, timestamp: new Date(now.getTime() - 86400000).toISOString() },
+    { id: generateId(), type: 'attendance' as const, message: 'Attendance marked for Pi Day Celebration', timestamp: new Date(now.getTime() - 86400000).toISOString() },
     { id: generateId(), type: 'registration' as const, message: `${participants[0].name} registered for Number Theory Workshop`, timestamp: new Date(now.getTime() - 86400000 * 3).toISOString() },
   ];
 

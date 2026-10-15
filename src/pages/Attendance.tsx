@@ -106,7 +106,7 @@ export default function AttendancePage({ data, onDataChange }: AttendancePagePro
   };
 
   return (
-    <Section className="space-y-16 lg:space-y-20 text-slate-100 !py-0">
+    <Section className="space-y-16 lg:space-y-20 text-slate-100">
       {/* ============================================================
           HEADER — Attendance & Participation
          ============================================================ */}
@@ -114,13 +114,13 @@ export default function AttendancePage({ data, onDataChange }: AttendancePagePro
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: cinematicEase }}
-        className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-slate-800/80"
+        className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-slate-800/80 mb-10"
       >
-        <div className="space-y-2">
-          <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest block font-mono">
+        <div>
+          <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest block font-mono mb-3">
             EVENT OPERATIONS & AUDITING
           </span>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight mb-4">
             Attendance & Participation
           </h1>
           <p className="text-slate-300 text-sm sm:text-base max-w-2xl leading-relaxed">
@@ -199,8 +199,8 @@ export default function AttendancePage({ data, onDataChange }: AttendancePagePro
          ============================================================ */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <motion.div
-          whileHover={{ y: -3 }}
-          className="rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800"
+          whileHover={{ y: -6 }}
+          className="rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800 hover:border-cyan-500/40 hover:shadow-[0_0_30px_rgba(34,211,238,0.25)] transition-all duration-200"
         >
           <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
             Registered Attendees
@@ -212,8 +212,8 @@ export default function AttendancePage({ data, onDataChange }: AttendancePagePro
         </motion.div>
 
         <motion.div
-          whileHover={{ y: -3 }}
-          className="rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800"
+          whileHover={{ y: -6 }}
+          className="rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800 hover:border-emerald-500/40 hover:shadow-[0_0_30px_rgba(16,185,129,0.25)] transition-all duration-200"
         >
           <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
             <UserCheck size={14} />
@@ -226,8 +226,8 @@ export default function AttendancePage({ data, onDataChange }: AttendancePagePro
         </motion.div>
 
         <motion.div
-          whileHover={{ y: -3 }}
-          className="rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800"
+          whileHover={{ y: -6 }}
+          className="rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800 hover:border-amber-500/40 hover:shadow-[0_0_30px_rgba(245,158,11,0.25)] transition-all duration-200"
         >
           <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
             <UserX size={14} />
@@ -242,8 +242,8 @@ export default function AttendancePage({ data, onDataChange }: AttendancePagePro
         </motion.div>
 
         <motion.div
-          whileHover={{ y: -3 }}
-          className="rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800"
+          whileHover={{ y: -6 }}
+          className="rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800 hover:border-cyan-500/40 hover:shadow-[0_0_30px_rgba(34,211,238,0.25)] transition-all duration-200"
         >
           <span className="text-xs font-semibold text-cyan-400 uppercase tracking-wider">
             Attendance Rate
@@ -361,7 +361,7 @@ export default function AttendancePage({ data, onDataChange }: AttendancePagePro
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.9 }}
-                                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full whitespace-nowrap text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
                               >
                                 <CheckCircle2 size={13} />
                                 Present
@@ -372,7 +372,7 @@ export default function AttendancePage({ data, onDataChange }: AttendancePagePro
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.9 }}
-                                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-500/15 text-red-400 border border-red-500/30"
+                                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full whitespace-nowrap text-xs font-bold bg-red-500/15 text-red-400 border border-red-500/30"
                               >
                                 <XCircle size={13} />
                                 Absent
@@ -383,7 +383,7 @@ export default function AttendancePage({ data, onDataChange }: AttendancePagePro
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.9 }}
-                                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700"
+                                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full whitespace-nowrap text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700"
                               >
                                 <Clock size={13} />
                                 Unrecorded

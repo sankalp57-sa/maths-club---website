@@ -64,11 +64,7 @@ export default function Navbar({
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled
-          ? 'bg-[#050B16]/92 backdrop-blur-xl border-b border-slate-800/80 shadow-lg shadow-black/20'
-          : 'bg-transparent border-b border-transparent'
-      }`}
+      className={`sticky top-0 z-50 w-full transition-all duration-300 bg-[#050B16]/90 backdrop-blur-xl border-b border-slate-800/80 shadow-lg shadow-black/20`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 lg:h-[84px]">

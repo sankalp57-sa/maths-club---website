@@ -197,7 +197,7 @@ export default function EventsPage({ data, onDataChange }: EventsPageProps) {
   }, [data.events, regEventId]);
 
   return (
-    <Section className="space-y-16 lg:space-y-20 text-slate-100 !py-0">
+    <Section className="space-y-16 lg:space-y-20 text-slate-100">
       {/* ============================================================
           SECTION: EDITORIAL HEADER
          ============================================================ */}
@@ -205,13 +205,13 @@ export default function EventsPage({ data, onDataChange }: EventsPageProps) {
         initial={shouldReduceMotion ? {} : { opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: cinematicEase }}
-        className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-slate-800/80"
+        className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-slate-800/80 mb-10"
       >
-        <div className="space-y-2">
-          <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest block">
+        <div>
+          <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest block font-mono mb-3">
             COLLEGIATE CALENDAR
           </span>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight mb-4">
             Discover What's Next
           </h1>
           <p className="text-slate-300 text-sm sm:text-base max-w-2xl leading-relaxed">
@@ -220,15 +220,15 @@ export default function EventsPage({ data, onDataChange }: EventsPageProps) {
         </div>
 
         <motion.button
-          whileHover={shouldReduceMotion ? {} : { scale: 1.02 }}
-          whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
+          whileHover={shouldReduceMotion ? {} : { scale: 1.03 }}
+          whileTap={shouldReduceMotion ? {} : { scale: 0.97 }}
           onClick={() => {
             setShowForm(true);
             setEditingEvent(null);
             setForm(emptyForm);
             setFormErrors({});
           }}
-          className="flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm text-[#050B16] bg-cyan-400 hover:bg-cyan-300 transition-colors shadow-sm shadow-cyan-400/20 flex-shrink-0"
+          className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-[#050B16] bg-cyan-400 hover:bg-cyan-300 transition-colors shadow-sm shadow-cyan-400/20 flex-shrink-0"
         >
           <Plus size={17} />
           <span>Host New Event</span>
@@ -409,9 +409,9 @@ export default function EventsPage({ data, onDataChange }: EventsPageProps) {
                     initial={shouldReduceMotion ? {} : { opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={shouldReduceMotion ? {} : { opacity: 0, scale: 0.95 }}
-                    whileHover={shouldReduceMotion ? {} : { y: -4, borderColor: 'rgba(0, 217, 245, 0.3)' }}
+                    whileHover={shouldReduceMotion ? {} : { y: -6 }}
                     transition={springSmooth}
-                    className="rounded-2xl p-6 sm:p-7 bg-[#0A1224]/70 border border-slate-800/80 hover:border-slate-700 flex flex-col justify-between transition-colors group"
+                    className="rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800/80 hover:border-cyan-500/40 hover:shadow-[0_0_30px_rgba(34,211,238,0.25)] flex flex-col justify-between transition-all duration-200 group"
                   >
                     <div className="space-y-4">
                       {/* Top Row: Date Block + Actions */}
@@ -426,7 +426,7 @@ export default function EventsPage({ data, onDataChange }: EventsPageProps) {
                             </span>
                           </div>
                           <div>
-                            <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full border ${status.color}`}>
+                            <span className={`inline-block text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap border ${status.color}`}>
                               {status.label}
                             </span>
                             <p className="text-xs text-slate-400 mt-1 font-mono">

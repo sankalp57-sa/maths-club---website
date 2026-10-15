@@ -94,7 +94,7 @@ function AppContent() {
       />
 
       {/* Main Page Content with smooth page transition */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16 relative z-10">
+      <main className="flex-1 w-full pt-24 relative z-10">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeSection}

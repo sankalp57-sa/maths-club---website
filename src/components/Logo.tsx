@@ -16,7 +16,6 @@ export default function Logo({
   className = '',
   interactive = false,
 }: LogoProps) {
-  // Determine sizing class
   let sizeClass = 'h-9 w-9 sm:h-11 sm:w-11';
   if (size === 'navbar') {
     sizeClass = 'h-9 w-9 sm:h-11 sm:w-11';
@@ -30,7 +29,7 @@ export default function Logo({
     <img
       src="/mits-du-logo.png"
       alt="Mathematics Club MITS-DU Gwalior"
-      className={`${sizeClass} object-contain drop-shadow-[0_0_12px_rgba(34,211,238,0.35)] select-none ${className}`}
+      className={`${sizeClass} object-contain rounded-full drop-shadow-[0_0_12px_rgba(34,211,238,0.35)] select-none ${className}`}
       draggable={false}
     />
   );

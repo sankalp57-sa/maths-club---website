@@ -186,7 +186,7 @@ export default function QuizPage({ data, onDataChange }: QuizPageProps) {
   const strokeOffset = circumference - scorePercent * circumference;
 
   return (
-    <Section className="space-y-12 sm:space-y-16 text-slate-100 !py-0 max-w-4xl">
+    <Section className="space-y-12 sm:space-y-16 text-slate-100 max-w-4xl">
       {/* ============================================================
           PHASE 1: CHALLENGE INTRODUCTION
          ============================================================ */}
@@ -199,9 +199,9 @@ export default function QuizPage({ data, onDataChange }: QuizPageProps) {
           className="space-y-10 sm:space-y-12"
         >
           {/* Header Banner with Animated Mathematical Graphic */}
-          <div className="text-center space-y-4 pb-8 border-b border-slate-800/80 relative">
+          <div className="text-center pb-8 border-b border-slate-800/80 relative mb-10">
             {/* Restrained Mathematical Vector Illustration */}
-            <div className="flex justify-center mb-2">
+            <div className="flex justify-center mb-4">
               <div className="relative w-20 h-20 flex items-center justify-center">
                 <svg className="w-full h-full text-cyan-500/30" viewBox="0 0 100 100">
                   {/* Concentric Coordinate rings */}
@@ -226,35 +226,35 @@ export default function QuizPage({ data, onDataChange }: QuizPageProps) {
               </div>
             </div>
 
-            <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest block font-mono">
+            <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest block font-mono mb-3">
               COMPUTATIONAL OLYMPIAD ARENA
             </span>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight mb-4">
               Mathematical Sprint Challenge
             </h1>
-            <p className="text-sm sm:text-base text-slate-300 max-w-xl mx-auto leading-relaxed pt-1">
+            <p className="text-sm sm:text-base text-slate-300 max-w-xl mx-auto leading-relaxed">
               Test your theoretical precision, algebraic dexterity, and problem-solving speed under competitive collegiate time constraints.
             </p>
           </div>
 
           {/* Rules & Structure Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
             <motion.div
-              whileHover={{ y: -4, borderColor: 'rgba(0, 217, 245, 0.4)' }}
+              whileHover={{ y: -6 }}
               transition={{ duration: 0.2 }}
-              className="rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800 text-center space-y-2.5"
+              className="rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800 hover:border-cyan-500/40 hover:shadow-[0_0_30px_rgba(34,211,238,0.25)] text-center space-y-2.5 transition-all duration-200"
             >
               <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center mx-auto">
                 <Target size={20} />
               </div>
               <h4 className="text-base font-bold text-white">10 Problems</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">Calculus, Linear Algebra, Number Theory & Logic</p>
+              <p className="text-xs text-slate-400 leading-relaxed">Algebra, Probability, Number Theory & Logic</p>
             </motion.div>
 
             <motion.div
-              whileHover={{ y: -4, borderColor: 'rgba(59, 130, 246, 0.4)' }}
+              whileHover={{ y: -6 }}
               transition={{ duration: 0.2 }}
-              className="rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800 text-center space-y-2.5"
+              className="rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800 hover:border-blue-500/40 hover:shadow-[0_0_30px_rgba(59,130,246,0.25)] text-center space-y-2.5 transition-all duration-200"
             >
               <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center mx-auto">
                 <Clock size={20} />
@@ -264,9 +264,9 @@ export default function QuizPage({ data, onDataChange }: QuizPageProps) {
             </motion.div>
 
             <motion.div
-              whileHover={{ y: -4, borderColor: 'rgba(20, 184, 166, 0.4)' }}
+              whileHover={{ y: -6 }}
               transition={{ duration: 0.2 }}
-              className="rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800 text-center space-y-2.5"
+              className="rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800 hover:border-teal-500/40 hover:shadow-[0_0_30px_rgba(20,184,166,0.25)] text-center space-y-2.5 transition-all duration-200"
             >
               <div className="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-300 flex items-center justify-center mx-auto">
                 <Trophy size={20} />
@@ -333,10 +333,10 @@ export default function QuizPage({ data, onDataChange }: QuizPageProps) {
 
               <motion.button
                 type="button"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => handleStartQuiz(false)}
-                className="w-full sm:w-auto flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-xl font-bold text-sm text-[#050B16] bg-cyan-400 hover:bg-cyan-300 shadow-lg shadow-cyan-400/20 transition-all duration-150"
+                className="w-full sm:w-auto flex items-center justify-center gap-2.5 px-6 py-3 rounded-xl font-bold text-sm text-[#050B16] bg-cyan-400 hover:bg-cyan-300 shadow-lg shadow-cyan-400/20 transition-all duration-150"
               >
                 <Play size={16} fill="currentColor" />
                 <span>Begin Sprint Challenge</span>
@@ -601,10 +601,10 @@ export default function QuizPage({ data, onDataChange }: QuizPageProps) {
               </button>
 
               <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={handleResetChallenge}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold text-[#050B16] bg-cyan-400 hover:bg-cyan-300 transition-all shadow-sm shadow-cyan-400/20"
+                className="flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-bold text-[#050B16] bg-cyan-400 hover:bg-cyan-300 transition-all shadow-sm shadow-cyan-400/20"
               >
                 <RotateCcw size={15} />
                 <span>Attempt Another Sprint</span>
