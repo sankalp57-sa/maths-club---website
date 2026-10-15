@@ -1,12 +1,13 @@
 // ============================================================
-// MathClub Nexus — Main Application Container
+// MathClub Nexus — Main Application Container & Route Governance
 // ============================================================
 
-import { useState, useCallback } from 'react';
-import type { NavSection, AppState } from './types';
-import { getState, resetState } from './utils/storage';
+import { useState, useCallback, useEffect } from 'react';
+import type { NavSection, AppState, UserRole } from './types';
+import { getState, resetState, getCurrentSession } from './utils/storage';
 import { generateDemoData } from './data/demoData';
 import { ToastProvider, useToast } from './components/Toast';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Dashboard from './pages/Dashboard';
@@ -17,21 +18,123 @@ import AttendancePage from './pages/Attendance';
 import MembersPage from './pages/Members';
 import CertificatesPage from './pages/Certificates';
 import FeedbackPage from './pages/Feedback';
+import MyAssignedEventsPage from './pages/MyAssignedEvents';
+import MyRegistrationsPage from './pages/MyRegistrations';
+import UserManagementPage from './pages/UserManagement';
+import LoginPage from './pages/Login';
+import SignupPage from './pages/Signup';
 
 import { motion, AnimatePresence } from 'motion/react';
 import MathParticleField from './components/MathParticleField';
 import { pageTransitionVariants } from './motion/motionTokens';
 
+function getRoleHome(role?: UserRole | null): NavSection {
+  switch (role) {
+    case 'president':
+    case 'core':
+      return 'dashboard';
+    case 'member':
+      return 'my-events';
+    case 'participant':
+      return 'my-registrations';
+    default:
+      return 'dashboard';
+  }
+}
+
 function AppContent() {
+  const { role, isAuthenticated } = useAuth();
   const { showToast } = useToast();
-  const [activeSection, setActiveSection] = useState<NavSection>('dashboard');
+
+  const [activeSection, setActiveSection] = useState<NavSection>(() => {
+    const current = getCurrentSession();
+    if (!current) return 'login';
+    return getRoleHome(current.user.role);
+  });
+
+  const [targetRedirect, setTargetRedirect] = useState<NavSection | undefined>(undefined);
   const [data, setData] = useState<AppState>(getState());
 
   const refreshData = useCallback(() => {
     setData(getState());
   }, []);
 
+  // Sync active section when auth state changes
+  useEffect(() => {
+    if (!isAuthenticated) {
+      if (activeSection !== 'signup') {
+        setActiveSection('login');
+      }
+    } else {
+      if (activeSection === 'login' || activeSection === 'signup') {
+        setActiveSection(getRoleHome(role));
+      }
+    }
+  }, [isAuthenticated, role, activeSection]);
+
+  const handleNavigate = useCallback(
+    (section: NavSection) => {
+      // If user is not logged in:
+      if (!isAuthenticated) {
+        if (section === 'signup') {
+          setActiveSection('signup');
+        } else {
+          setTargetRedirect(section !== 'login' ? section : undefined);
+          setActiveSection('login');
+          if (section !== 'login') {
+            showToast('error', 'Please log in to access this section.');
+          }
+        }
+        return;
+      }
+
+      // If user is authenticated and navigating to login/signup:
+      if (section === 'login' || section === 'signup') {
+        setActiveSection(getRoleHome(role));
+        return;
+      }
+
+      // Role permission checks (Matrix enforcement)
+      if (section === 'users') {
+        if (role !== 'president') {
+          showToast('error', 'Access denied. User & Role Management requires President authorization.');
+          return;
+        }
+      }
+
+      if (section === 'attendance') {
+        if (role !== 'president' && role !== 'core') {
+          showToast('error', 'Access denied. Attendance logging requires Core or President privileges.');
+          return;
+        }
+      }
+
+      if (section === 'members') {
+        if (role === 'participant') {
+          showToast('error', 'Access denied. Member Directory is restricted to club staff.');
+          return;
+        }
+      }
+
+      if (section === 'my-events') {
+        if (role === 'participant') {
+          showToast('error', 'Access denied. Assigned Events portal is restricted to club staff.');
+          setActiveSection('my-registrations');
+          return;
+        }
+      }
+
+      setActiveSection(section);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    [isAuthenticated, role, showToast]
+  );
+
   const handleLoadDemo = () => {
+    if (role !== 'president') {
+      showToast('error', 'Permission denied. Only President can reload demo data.');
+      return;
+    }
     const demoData = generateDemoData();
     localStorage.setItem('mathclub_nexus_data', JSON.stringify(demoData));
     refreshData();
@@ -42,6 +145,10 @@ function AppContent() {
   };
 
   const handleReset = () => {
+    if (role !== 'president') {
+      showToast('error', 'Permission denied. Only President can reset prototype state.');
+      return;
+    }
     resetState();
     refreshData();
     showToast('info', 'Local prototype state has been cleared');
@@ -50,9 +157,9 @@ function AppContent() {
   const renderPage = () => {
     switch (activeSection) {
       case 'dashboard':
-        return <Dashboard data={data} onNavigate={setActiveSection} />;
+        return <Dashboard data={data} onNavigate={handleNavigate} />;
       case 'events':
-        return <EventsPage data={data} onDataChange={refreshData} />;
+        return <EventsPage data={data} onDataChange={refreshData} onNavigate={handleNavigate} />;
       case 'quiz':
         return <QuizPage data={data} onDataChange={refreshData} />;
       case 'leaderboard':
@@ -65,10 +172,33 @@ function AppContent() {
         return <CertificatesPage data={data} onDataChange={refreshData} />;
       case 'feedback':
         return <FeedbackPage data={data} onDataChange={refreshData} />;
+      case 'my-events':
+        return <MyAssignedEventsPage data={data} onDataChange={refreshData} onNavigate={handleNavigate} />;
+      case 'my-registrations':
+        return <MyRegistrationsPage data={data} onDataChange={refreshData} onNavigate={handleNavigate} />;
+      case 'users':
+        return <UserManagementPage data={data} onDataChange={refreshData} />;
+      case 'login':
+        return <LoginPage onNavigate={handleNavigate} targetRedirect={targetRedirect} />;
+      case 'signup':
+        return <SignupPage onNavigate={handleNavigate} />;
       default:
-        return <Dashboard data={data} onNavigate={setActiveSection} />;
+        return <Dashboard data={data} onNavigate={handleNavigate} />;
     }
   };
+
+  // If user is not authenticated: show Login or Signup screen ONLY. No Navbar, no Footer!
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#050B16] text-slate-100 flex flex-col relative selection:bg-cyan-500/30 selection:text-white">
+        {activeSection === 'signup' ? (
+          <SignupPage onNavigate={handleNavigate} />
+        ) : (
+          <LoginPage onNavigate={handleNavigate} targetRedirect={targetRedirect} />
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#050B16] text-slate-100 flex flex-col relative selection:bg-cyan-500/30 selection:text-white">
@@ -100,7 +230,7 @@ function AppContent() {
       {/* Top Navigation Bar */}
       <Navbar
         activeSection={activeSection}
-        onNavigate={setActiveSection}
+        onNavigate={handleNavigate}
         onLoadDemo={handleLoadDemo}
         onReset={handleReset}
       />
@@ -121,7 +251,7 @@ function AppContent() {
       </main>
 
       {/* Global Cinematic Footer */}
-      <Footer onNavigate={setActiveSection} />
+      <Footer onNavigate={handleNavigate} />
     </div>
   );
 }
@@ -129,7 +259,9 @@ function AppContent() {
 export default function App() {
   return (
     <ToastProvider>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </ToastProvider>
   );
 }

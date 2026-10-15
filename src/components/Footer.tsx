@@ -4,6 +4,7 @@
 
 import { Code, Award } from 'lucide-react';
 import type { NavSection } from '../types';
+import { useAuth } from '../context/AuthContext';
 import Logo from './Logo';
 import Section from './Section';
 
@@ -12,6 +13,7 @@ interface FooterProps {
 }
 
 export default function Footer({ onNavigate }: FooterProps) {
+  const { role } = useAuth();
   return (
     <footer className="mt-20 border-t border-slate-800/80 bg-[#030712] relative overflow-hidden text-slate-400">
       <Section className="!py-12 md:!py-16 relative z-10">
@@ -53,7 +55,65 @@ export default function Footer({ onNavigate }: FooterProps) {
                   onClick={() => onNavigate('events')}
                   className="hover:text-cyan-400 transition-colors"
                 >
-                  Events & Competitions Hub
+                  Events & Competitions
+                </button>
+              </li>
+              {role === 'participant' && (
+                <li>
+                  <button
+                    onClick={() => onNavigate('my-registrations')}
+                    className="hover:text-cyan-400 transition-colors text-cyan-300 font-medium"
+                  >
+                    My Registrations & Receipts
+                  </button>
+                </li>
+              )}
+              {(role === 'president' || role === 'core' || role === 'member') && (
+                <li>
+                  <button
+                    onClick={() => onNavigate('my-events')}
+                    className="hover:text-cyan-400 transition-colors text-cyan-300 font-medium"
+                  >
+                    My Assigned Events
+                  </button>
+                </li>
+              )}
+              {(role === 'president' || role === 'core') && (
+                <li>
+                  <button
+                    onClick={() => onNavigate('attendance')}
+                    className="hover:text-cyan-400 transition-colors"
+                  >
+                    Attendance Verification Portal
+                  </button>
+                </li>
+              )}
+              {role === 'president' && (
+                <li>
+                  <button
+                    onClick={() => onNavigate('users')}
+                    className="hover:text-amber-400 transition-colors text-amber-300 font-medium"
+                  >
+                    User & Role Governance
+                  </button>
+                </li>
+              )}
+              {(role === 'president' || role === 'core' || role === 'member') && (
+                <li>
+                  <button
+                    onClick={() => onNavigate('members')}
+                    className="hover:text-cyan-400 transition-colors"
+                  >
+                    Member Roster & Governance
+                  </button>
+                </li>
+              )}
+              <li>
+                <button
+                  onClick={() => onNavigate('certificates')}
+                  className="hover:text-cyan-400 transition-colors"
+                >
+                  Certificate Distribution
                 </button>
               </li>
               <li>
@@ -70,30 +130,6 @@ export default function Footer({ onNavigate }: FooterProps) {
                   className="hover:text-cyan-400 transition-colors"
                 >
                   Hall of Champions Leaderboard
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onNavigate('attendance')}
-                  className="hover:text-cyan-400 transition-colors"
-                >
-                  Attendance Verification Portal
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onNavigate('members')}
-                  className="hover:text-cyan-400 transition-colors"
-                >
-                  Member Roster & Governance
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onNavigate('certificates')}
-                  className="hover:text-cyan-400 transition-colors"
-                >
-                  Certificate Distribution System
                 </button>
               </li>
               <li>

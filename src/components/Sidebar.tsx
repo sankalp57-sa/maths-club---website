@@ -12,8 +12,17 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
+  Ticket,
+  UserCheck,
+  ShieldCheck,
+  Crown,
+  User as UserIcon,
+  Users,
+  Award,
+  MessageSquare,
 } from 'lucide-react';
-import type { NavSection } from '../types';
+import type { NavSection, UserRole } from '../types';
+import { useAuth } from '../context/AuthContext';
 import Logo from './Logo';
 
 interface SidebarProps {
@@ -25,14 +34,6 @@ interface SidebarProps {
   onToggleCollapse: () => void;
 }
 
-const navItems: { id: NavSection; label: string; icon: React.ReactNode; badge?: string }[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
-  { id: 'events', label: 'Events Hub', icon: <Calendar size={20} /> },
-  { id: 'quiz', label: 'Quiz Arena', icon: <BrainCircuit size={20} /> },
-  { id: 'leaderboard', label: 'Leaderboard', icon: <Trophy size={20} /> },
-  { id: 'attendance', label: 'Attendance', icon: <ClipboardCheck size={20} /> },
-];
-
 export default function Sidebar({
   activeSection,
   onNavigate,
@@ -41,12 +42,72 @@ export default function Sidebar({
   isCollapsed,
   onToggleCollapse,
 }: SidebarProps) {
+  const { user, role } = useAuth();
+
   const handleNav = (section: NavSection) => {
     onNavigate(section);
     if (isMobileOpen) {
       onToggleMobile();
     }
   };
+
+  // Build role-specific sidebar items
+  const getSidebarItems = (): { id: NavSection; label: string; icon: React.ReactNode }[] => {
+    if (role === 'participant') {
+      return [
+        { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
+        { id: 'events', label: 'Events', icon: <Calendar size={20} /> },
+        { id: 'my-registrations', label: 'My Registrations', icon: <Ticket size={20} /> },
+        { id: 'quiz', label: 'Quiz Arena', icon: <BrainCircuit size={20} /> },
+        { id: 'leaderboard', label: 'Leaderboard', icon: <Trophy size={20} /> },
+        { id: 'certificates', label: 'My Certificates', icon: <Award size={20} /> },
+        { id: 'feedback', label: 'Feedback', icon: <MessageSquare size={20} /> },
+      ];
+    }
+
+    if (role === 'member') {
+      return [
+        { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
+        { id: 'events', label: 'Events Hub', icon: <Calendar size={20} /> },
+        { id: 'my-events', label: 'Assigned Events', icon: <UserCheck size={20} /> },
+        { id: 'quiz', label: 'Quiz Arena', icon: <BrainCircuit size={20} /> },
+        { id: 'leaderboard', label: 'Leaderboard', icon: <Trophy size={20} /> },
+        { id: 'members', label: 'Member Roster', icon: <Users size={20} /> },
+        { id: 'certificates', label: 'Certificates', icon: <Award size={20} /> },
+        { id: 'feedback', label: 'Feedback', icon: <MessageSquare size={20} /> },
+      ];
+    }
+
+    if (role === 'core') {
+      return [
+        { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
+        { id: 'events', label: 'Events Hub', icon: <Calendar size={20} /> },
+        { id: 'my-events', label: 'Assigned Events', icon: <UserCheck size={20} /> },
+        { id: 'attendance', label: 'Attendance', icon: <ClipboardCheck size={20} /> },
+        { id: 'members', label: 'Member Directory', icon: <Users size={20} /> },
+        { id: 'certificates', label: 'Certificates', icon: <Award size={20} /> },
+        { id: 'quiz', label: 'Quiz Arena', icon: <BrainCircuit size={20} /> },
+        { id: 'leaderboard', label: 'Leaderboard', icon: <Trophy size={20} /> },
+        { id: 'feedback', label: 'Feedback Hub', icon: <MessageSquare size={20} /> },
+      ];
+    }
+
+    // President
+    return [
+      { id: 'dashboard', label: 'Command Center', icon: <LayoutDashboard size={20} /> },
+      { id: 'events', label: 'Events Hub', icon: <Calendar size={20} /> },
+      { id: 'my-events', label: 'Assigned Events', icon: <UserCheck size={20} /> },
+      { id: 'attendance', label: 'Attendance', icon: <ClipboardCheck size={20} /> },
+      { id: 'users', label: 'User Governance', icon: <ShieldCheck size={20} /> },
+      { id: 'members', label: 'Club Members', icon: <Users size={20} /> },
+      { id: 'certificates', label: 'Certificates', icon: <Award size={20} /> },
+      { id: 'quiz', label: 'Quiz Arena', icon: <BrainCircuit size={20} /> },
+      { id: 'leaderboard', label: 'Leaderboard', icon: <Trophy size={20} /> },
+      { id: 'feedback', label: 'Feedback Hub', icon: <MessageSquare size={20} /> },
+    ];
+  };
+
+  const navItems = getSidebarItems();
 
   const navContent = (mobile = false) => (
     <div className="flex flex-col h-full select-none">
@@ -78,50 +139,41 @@ export default function Sidebar({
       </div>
 
       {/* Navigation List */}
-      <nav className="flex-1 p-3 space-y-1.5 overflow-y-auto">
-        {navItems.map(item => {
+      <nav className="flex-1 p-3 space-y-1.5 overflow-y-auto scrollbar-thin">
+        {navItems.map((item) => {
           const isActive = activeSection === item.id;
           return (
             <button
               key={item.id}
               onClick={() => handleNav(item.id)}
-              title={isCollapsed && !mobile ? item.label : undefined}
-              className={`w-full flex items-center rounded-xl text-sm font-medium transition-all duration-200 group relative ${
-                isCollapsed && !mobile ? 'justify-center p-3' : 'gap-3 px-3.5 py-3'
-              } ${
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                 isActive
-                  ? 'bg-violet-600/20 text-violet-200 border border-violet-500/30 shadow-lg shadow-violet-500/10'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent'
-              }`}
+                  ? 'bg-cyan-500/15 text-cyan-300 font-semibold shadow-sm shadow-cyan-500/10 border border-cyan-500/25'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+              } ${isCollapsed && !mobile ? 'justify-center px-2' : ''}`}
+              title={isCollapsed && !mobile ? item.label : undefined}
             >
-              <span
-                className={`flex-shrink-0 transition-colors ${
-                  isActive ? 'text-violet-400' : 'text-slate-400 group-hover:text-slate-200'
-                }`}
-              >
+              <span className={`flex-shrink-0 ${isActive ? 'text-cyan-400' : 'text-slate-400'}`}>
                 {item.icon}
               </span>
-
               {(!isCollapsed || mobile) && (
-                <span className="truncate flex-1 text-left">{item.label}</span>
-              )}
-
-              {isActive && (!isCollapsed || mobile) && (
-                <span className="w-1.5 h-1.5 rounded-full bg-violet-400 shadow-sm shadow-violet-400 animate-pulse" />
+                <span className="truncate">{item.label}</span>
               )}
             </button>
           );
         })}
       </nav>
 
-      {/* Footer / Toggle Section */}
+      {/* Footer / User Profile Section */}
       <div className="p-3 border-t border-slate-800/80 space-y-2">
-        {(!isCollapsed || mobile) && (
+        {(!isCollapsed || mobile) && user && (
           <div className="px-3 py-2.5 rounded-xl bg-slate-800/40 border border-slate-800 flex items-center gap-2.5">
-            <Sparkles size={16} className="text-violet-400 flex-shrink-0" />
-            <div className="min-w-0">
-              <p className="text-[11px] font-medium text-slate-300 truncate">MathClub Nexus</p>
-              <p className="text-[10px] text-slate-500 truncate">Live Offline Storage</p>
+            <div className="w-7 h-7 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
+              {user.name.charAt(0)}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-[11px] font-bold text-slate-200 truncate">{user.name}</p>
+              <p className="text-[10px] text-cyan-400 font-mono capitalize">{user.role}</p>
             </div>
           </div>
         )}
@@ -145,30 +197,31 @@ export default function Sidebar({
 
   return (
     <>
+      {/* Mobile Backdrop */}
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 lg:hidden"
+          onClick={onToggleMobile}
+        />
+      )}
+
+      {/* Mobile Drawer (Left off-canvas) */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-[#050B16] border-r border-slate-800/80 transform transition-transform duration-300 ease-in-out lg:hidden ${
+          isMobileOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        {navContent(true)}
+      </aside>
+
       {/* Desktop Persistent Sidebar (flex item, non-overlapping) */}
       <aside
-        className={`hidden md:flex flex-col flex-shrink-0 sticky top-0 h-screen z-40 bg-slate-900/95 border-r border-slate-800 backdrop-blur-xl transition-all duration-300 ${
+        className={`hidden lg:flex flex-col flex-shrink-0 bg-[#050B16]/95 backdrop-blur-xl border-r border-slate-800/80 transition-all duration-300 sticky top-0 h-screen z-30 ${
           isCollapsed ? 'w-20' : 'w-64'
         }`}
       >
         {navContent(false)}
       </aside>
-
-      {/* Mobile Drawer (off-canvas overlay) */}
-      {isMobileOpen && (
-        <div className="md:hidden fixed inset-0 z-50 flex">
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
-            onClick={onToggleMobile}
-          />
-
-          {/* Drawer content */}
-          <aside className="relative w-72 max-w-[85vw] h-full bg-slate-900 border-r border-slate-800 shadow-2xl flex flex-col z-10 animate-fade-in">
-            {navContent(true)}
-          </aside>
-        </div>
-      )}
     </>
   );
 }

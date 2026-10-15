@@ -2,6 +2,29 @@
 // MathClub Nexus — Core Type Definitions
 // ============================================================
 
+export type UserRole = 'president' | 'core' | 'member' | 'participant';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  passwordHash: string;
+  role: UserRole;
+  linkedMemberId?: string;
+  linkedParticipantId?: string;
+  phone?: string;
+  college?: string;
+  department?: string;
+  year?: string;
+  status?: 'active' | 'deactivated';
+  createdAt: string;
+}
+
+export interface UserSession {
+  user: User;
+  loginTime: string;
+}
+
 export interface Participant {
   id: string;
   name: string;
@@ -17,7 +40,30 @@ export interface Event {
   date: string;
   venue: string;
   capacity: number;
-  registrations: string[]; // participant IDs
+  fee?: number; // 0 = free
+  registrationDeadline?: string;
+  assignedTo?: string[]; // member IDs
+  registrations: string[]; // participant IDs or registration IDs
+  createdAt: string;
+}
+
+export interface Registration {
+  id: string;
+  eventId: string;
+  userId: string;
+  participantName: string;
+  email: string;
+  phone: string;
+  college: string;
+  year: string;
+  department: string;
+  amount: number;
+  paymentMethod?: 'UPI' | 'Card' | 'Net Banking' | 'Free';
+  paymentStatus: 'paid' | 'pending' | 'failed' | 'free';
+  transactionId: string;
+  status: 'pending' | 'confirmed' | 'rejected';
+  attendanceStatus?: 'present' | 'absent' | 'pending';
+  checkedInAt?: string;
   createdAt: string;
 }
 
@@ -50,8 +96,20 @@ export interface AttendanceRecord {
 
 export interface ActivityItem {
   id: string;
-  type: 'registration' | 'quiz' | 'attendance' | 'event' | 'member' | 'certificate' | 'feedback';
+  type:
+    | 'registration'
+    | 'quiz'
+    | 'attendance'
+    | 'event'
+    | 'member'
+    | 'certificate'
+    | 'feedback'
+    | 'auth'
+    | 'payment'
+    | 'role';
   message: string;
+  actorName?: string;
+  actorRole?: UserRole;
   timestamp: string;
 }
 
@@ -106,6 +164,8 @@ export interface AppState {
   members: Member[];
   certificates: Certificate[];
   feedback: Feedback[];
+  users: User[];
+  registrations: Registration[];
 }
 
 export type NavSection =
@@ -116,4 +176,9 @@ export type NavSection =
   | 'attendance'
   | 'members'
   | 'certificates'
-  | 'feedback';
+  | 'feedback'
+  | 'my-events'
+  | 'my-registrations'
+  | 'users'
+  | 'login'
+  | 'signup';

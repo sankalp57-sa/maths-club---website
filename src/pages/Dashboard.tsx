@@ -26,6 +26,7 @@ import InteractiveMathVisual from '../components/InteractiveMathVisual';
 import AnimatedCounter from '../components/AnimatedCounter';
 import MotionSection from '../components/MotionSection';
 import Section from '../components/Section';
+import { useAuth } from '../context/AuthContext';
 import { cinematicEase } from '../motion/motionTokens';
 
 interface DashboardProps {
@@ -35,6 +36,34 @@ interface DashboardProps {
 
 export default function Dashboard({ data, onNavigate }: DashboardProps) {
   const shouldReduceMotion = useReducedMotion();
+  const { user } = useAuth();
+
+  // Participant-specific personal telemetry
+  const participantRegistrations = useMemo(() => {
+    if (!user || user.role !== 'participant') return [];
+    return (data.registrations || []).filter(
+      (r) => r.userId === user.id || r.email?.toLowerCase() === user.email.toLowerCase()
+    );
+  }, [data.registrations, user]);
+
+  const participantCertificates = useMemo(() => {
+    if (!user || user.role !== 'participant') return [];
+    return (data.certificates || []).filter(
+      (c) => c.participantName.toLowerCase() === user.name.toLowerCase()
+    );
+  }, [data.certificates, user]);
+
+  const participantQuizAttempts = useMemo(() => {
+    if (!user || user.role !== 'participant') return [];
+    return (data.quizAttempts || []).filter(
+      (q) => q.participantName.toLowerCase() === user.name.toLowerCase()
+    );
+  }, [data.quizAttempts, user]);
+
+  const bestQuizScore = useMemo(() => {
+    if (participantQuizAttempts.length === 0) return null;
+    return [...participantQuizAttempts].sort((a, b) => b.score - a.score)[0];
+  }, [participantQuizAttempts]);
 
   // Telemetry statistics directly from real AppState
   const stats = useMemo(() => {
@@ -260,7 +289,127 @@ export default function Dashboard({ data, onNavigate }: DashboardProps) {
          ============================================================ */}
       <Section className="!py-14 md:!py-20">
         <MotionSection>
-          <div className="mb-10">
+          {user?.role === 'participant' ? (
+            <div>
+              <div className="mb-10">
+                <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest block mb-3 font-mono">
+                  PERSONAL SCHOLAR TELEMETRY
+                </span>
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white mb-4">
+                  Welcome Back, {user.name}
+                </h2>
+                <p className="text-slate-400 text-sm sm:text-base max-w-xl leading-relaxed">
+                  Track your enrolled event passes, academic certificates, attendance records, and competitive challenge results.
+                </p>
+              </div>
+
+              {/* Personal Metric Cards */}
+              <motion.div
+                variants={containerStagger}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: '-80px' }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+              >
+                {/* Participant Card 1: My Registrations */}
+                <motion.div
+                  variants={itemFadeIn}
+                  whileHover={shouldReduceMotion ? {} : { y: -6 }}
+                  onClick={() => onNavigate('my-registrations')}
+                  className="cursor-pointer rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800/80 hover:border-cyan-500/40 hover:shadow-[0_0_30px_rgba(34,211,238,0.25)] transition-all duration-200"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                      My Registrations
+                    </span>
+                    <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                      <ClipboardCheck size={18} />
+                    </div>
+                  </div>
+                  <p className="text-3xl sm:text-4xl font-extrabold text-white mt-3 font-mono">
+                    <AnimatedCounter value={participantRegistrations.length} />
+                  </p>
+                  <p className="text-xs text-cyan-400 mt-2 font-semibold flex items-center gap-1">
+                    <span>Manage Passes</span>
+                    <ChevronRight size={13} />
+                  </p>
+                </motion.div>
+
+                {/* Participant Card 2: My Certificates */}
+                <motion.div
+                  variants={itemFadeIn}
+                  whileHover={shouldReduceMotion ? {} : { y: -6 }}
+                  onClick={() => onNavigate('my-registrations')}
+                  className="cursor-pointer rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800/80 hover:border-amber-500/40 hover:shadow-[0_0_30px_rgba(245,158,11,0.25)] transition-all duration-200"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                      My Certificates
+                    </span>
+                    <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                      <Award size={18} />
+                    </div>
+                  </div>
+                  <p className="text-3xl sm:text-4xl font-extrabold text-white mt-3 font-mono">
+                    <AnimatedCounter value={participantCertificates.length} />
+                  </p>
+                  <p className="text-xs text-amber-400 mt-2 font-semibold flex items-center gap-1">
+                    <span>Download & Verify</span>
+                    <ChevronRight size={13} />
+                  </p>
+                </motion.div>
+
+                {/* Participant Card 3: Upcoming Events */}
+                <motion.div
+                  variants={itemFadeIn}
+                  whileHover={shouldReduceMotion ? {} : { y: -6 }}
+                  onClick={() => onNavigate('events')}
+                  className="cursor-pointer rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800/80 hover:border-blue-500/40 hover:shadow-[0_0_30px_rgba(59,130,246,0.25)] transition-all duration-200"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                      Upcoming Events
+                    </span>
+                    <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                      <Calendar size={18} />
+                    </div>
+                  </div>
+                  <p className="text-3xl sm:text-4xl font-extrabold text-white mt-3 font-mono">
+                    <AnimatedCounter value={stats.upcomingEvents} />
+                  </p>
+                  <p className="text-xs text-blue-400 mt-2 font-semibold flex items-center gap-1">
+                    <span>Browse & Register</span>
+                    <ChevronRight size={13} />
+                  </p>
+                </motion.div>
+
+                {/* Participant Card 4: Best Quiz Sprint */}
+                <motion.div
+                  variants={itemFadeIn}
+                  whileHover={shouldReduceMotion ? {} : { y: -6 }}
+                  onClick={() => onNavigate('quiz')}
+                  className="cursor-pointer rounded-2xl p-6 bg-[#0A1224]/70 border border-slate-800/80 hover:border-teal-500/40 hover:shadow-[0_0_30px_rgba(20,184,166,0.25)] transition-all duration-200"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                      Quiz Standing
+                    </span>
+                    <div className="w-9 h-9 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400">
+                      <BrainCircuit size={18} />
+                    </div>
+                  </div>
+                  <p className="text-3xl sm:text-4xl font-extrabold text-white mt-3 font-mono">
+                    {bestQuizScore ? `${bestQuizScore.score}/10` : '—'}
+                  </p>
+                  <p className="text-xs text-slate-400 mt-2">
+                    {bestQuizScore ? `Speed: ${bestQuizScore.timeTakenSeconds}s sprint` : 'Challenge the quiz sprint →'}
+                  </p>
+                </motion.div>
+              </motion.div>
+            </div>
+          ) : (
+            <div>
+              <div className="mb-10">
             <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest block mb-3 font-mono">
               TELEMETRY & IMPACT
             </span>
@@ -453,6 +602,8 @@ export default function Dashboard({ data, onNavigate }: DashboardProps) {
               </p>
             </motion.div>
           </div>
+            </div>
+          )}
         </MotionSection>
       </Section>
 
@@ -812,9 +963,21 @@ export default function Dashboard({ data, onNavigate }: DashboardProps) {
                     <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 flex-shrink-0">
                       <Sparkles size={14} />
                     </div>
-                    <p className="text-sm text-slate-200 truncate leading-snug">
-                      {act.message}
-                    </p>
+                    <div className="min-w-0">
+                      <p className="text-sm text-slate-200 truncate leading-snug">
+                        {act.message}
+                      </p>
+                      {act.actorName && (
+                        <div className="flex items-center gap-2 mt-1 text-[11px] text-slate-400">
+                          <span>By <strong className="text-slate-300 font-medium">{act.actorName}</strong></span>
+                          {act.actorRole && (
+                            <span className="px-1.5 py-0.2 rounded text-[10px] uppercase font-mono font-bold tracking-wider bg-slate-800 text-cyan-400 border border-slate-700">
+                              {act.actorRole}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <span className="text-xs text-slate-500 font-mono flex-shrink-0">
                     {formatTimeAgo(act.timestamp)}

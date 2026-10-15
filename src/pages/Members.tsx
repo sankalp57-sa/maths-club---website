@@ -30,6 +30,7 @@ import Section from '../components/Section';
 import MotionSection from '../components/MotionSection';
 import AnimatedCounter from '../components/AnimatedCounter';
 import { cinematicEase } from '../motion/motionTokens';
+import { useAuth } from '../context/AuthContext';
 
 interface MembersPageProps {
   data: AppState;
@@ -37,6 +38,14 @@ interface MembersPageProps {
 }
 
 export default function MembersPage({ data, onDataChange }: MembersPageProps) {
+  const { user } = useAuth();
+  const isPresident = user?.role === 'president';
+  const isCore = user?.role === 'core';
+  const canAddEdit = isPresident || isCore;
+  const canDelete = isPresident;
+  const canChangeRole = isPresident;
+  const canExport = isPresident;
+
   const { showToast } = useToast();
   const shouldReduceMotion = useReducedMotion();
 
@@ -165,8 +174,12 @@ export default function MembersPage({ data, onDataChange }: MembersPageProps) {
     e.preventDefault();
     if (!validateForm()) return;
 
+    const actor = user ? { name: user.name, role: user.role } : undefined;
+
     if (editingMember) {
-      const res = updateMember(editingMember.id, formData);
+      // If user cannot change role, preserve current role
+      const payload = canChangeRole ? formData : { ...formData, role: editingMember.role };
+      const res = updateMember(editingMember.id, payload, actor);
       if (res.success) {
         showToast('success', res.message);
         onDataChange();
@@ -175,7 +188,7 @@ export default function MembersPage({ data, onDataChange }: MembersPageProps) {
         showToast('error', res.message);
       }
     } else {
-      const res = addMember(formData);
+      const res = addMember(formData, actor);
       if (res.success) {
         showToast('success', res.message);
         onDataChange();
@@ -187,16 +200,28 @@ export default function MembersPage({ data, onDataChange }: MembersPageProps) {
   };
 
   const handleToggleStatus = (id: string) => {
-    const res = toggleMemberStatus(id);
+    if (!canAddEdit) {
+      showToast('error', 'Only President or Core Team can toggle member status');
+      return;
+    }
+    const actor = user ? { name: user.name, role: user.role } : undefined;
+    const res = toggleMemberStatus(id, actor);
     if (res.success) {
       showToast('info', res.message);
       onDataChange();
+    } else {
+      showToast('error', res.message);
     }
   };
 
   const handleDeleteConfirm = () => {
     if (!memberToDelete) return;
-    const ok = deleteMember(memberToDelete.id);
+    if (!canDelete) {
+      showToast('error', 'Only President can delete club members');
+      return;
+    }
+    const actor = user ? { name: user.name, role: user.role } : undefined;
+    const ok = deleteMember(memberToDelete.id, actor);
     if (ok) {
       showToast('info', `Member ${memberToDelete.name} has been removed`);
       onDataChange();
@@ -267,25 +292,29 @@ export default function MembersPage({ data, onDataChange }: MembersPageProps) {
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <motion.button
-                whileHover={shouldReduceMotion ? {} : { scale: 1.03 }}
-                whileTap={shouldReduceMotion ? {} : { scale: 0.97 }}
-                onClick={handleExportCSV}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm text-slate-200 bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 hover:border-slate-600 transition-colors"
-              >
-                <Download size={16} className="text-cyan-400" />
-                <span>Export CSV</span>
-              </motion.button>
+              {canExport && (
+                <motion.button
+                  whileHover={shouldReduceMotion ? {} : { scale: 1.03 }}
+                  whileTap={shouldReduceMotion ? {} : { scale: 0.97 }}
+                  onClick={handleExportCSV}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm text-slate-200 bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 hover:border-slate-600 transition-colors cursor-pointer"
+                >
+                  <Download size={16} className="text-cyan-400" />
+                  <span>Export CSV</span>
+                </motion.button>
+              )}
 
-              <motion.button
-                whileHover={shouldReduceMotion ? {} : { scale: 1.03 }}
-                whileTap={shouldReduceMotion ? {} : { scale: 0.97 }}
-                onClick={handleOpenAdd}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-[#050B16] bg-cyan-400 hover:bg-cyan-300 transition-colors shadow-sm shadow-cyan-400/20"
-              >
-                <UserPlus size={16} />
-                <span>Add Member</span>
-              </motion.button>
+              {canAddEdit && (
+                <motion.button
+                  whileHover={shouldReduceMotion ? {} : { scale: 1.03 }}
+                  whileTap={shouldReduceMotion ? {} : { scale: 0.97 }}
+                  onClick={handleOpenAdd}
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-[#050B16] bg-cyan-400 hover:bg-cyan-300 transition-colors shadow-sm shadow-cyan-400/20 cursor-pointer"
+                >
+                  <UserPlus size={16} />
+                  <span>Add Member</span>
+                </motion.button>
+              )}
             </div>
           </div>
 
@@ -542,20 +571,27 @@ export default function MembersPage({ data, onDataChange }: MembersPageProps) {
                         {/* Action Buttons */}
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-2">
-                            <button
-                              onClick={() => handleOpenEdit(member)}
-                              className="p-2 text-slate-400 hover:text-cyan-300 hover:bg-cyan-500/10 rounded-lg transition-colors"
-                              title="Edit member details"
-                            >
-                              <Edit2 size={15} />
-                            </button>
-                            <button
-                              onClick={() => setMemberToDelete(member)}
-                              className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-                              title="Remove member"
-                            >
-                              <Trash2 size={15} />
-                            </button>
+                            {canAddEdit && (
+                              <button
+                                onClick={() => handleOpenEdit(member)}
+                                className="p-2 text-slate-400 hover:text-cyan-300 hover:bg-cyan-500/10 rounded-lg transition-colors cursor-pointer"
+                                title="Edit member details"
+                              >
+                                <Edit2 size={15} />
+                              </button>
+                            )}
+                            {canDelete && (
+                              <button
+                                onClick={() => setMemberToDelete(member)}
+                                className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
+                                title="Remove member"
+                              >
+                                <Trash2 size={15} />
+                              </button>
+                            )}
+                            {!canAddEdit && !canDelete && (
+                              <span className="text-xs text-slate-500 italic">View Only</span>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -676,12 +712,13 @@ export default function MembersPage({ data, onDataChange }: MembersPageProps) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    Club Role
+                    Club Role {canChangeRole ? '' : '(President only)'}
                   </label>
                   <select
                     value={formData.role}
+                    disabled={!canChangeRole}
                     onChange={(e) => setFormData({ ...formData, role: e.target.value as MemberRole })}
-                    className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm focus:outline-none focus:border-cyan-500/50 transition-colors"
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm focus:outline-none focus:border-cyan-500/50 transition-colors disabled:opacity-50"
                   >
                     <option value="Member">Member</option>
                     <option value="Core Team">Core Team</option>

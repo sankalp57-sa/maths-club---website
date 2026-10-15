@@ -36,6 +36,7 @@ import Section from '../components/Section';
 import MotionSection from '../components/MotionSection';
 import AnimatedCounter from '../components/AnimatedCounter';
 import { toPng } from 'html-to-image';
+import { useAuth } from '../context/AuthContext';
 
 interface CertificatesPageProps {
   data: AppState;
@@ -43,6 +44,9 @@ interface CertificatesPageProps {
 }
 
 export default function CertificatesPage({ data, onDataChange }: CertificatesPageProps) {
+  const { user, can } = useAuth();
+  const canIssueOrRevoke = can('issue_certificates');
+
   const { showToast } = useToast();
   const shouldReduceMotion = useReducedMotion();
 
@@ -157,7 +161,12 @@ export default function CertificatesPage({ data, onDataChange }: CertificatesPag
   // Handlers
   const handleIssueSingle = (participantName: string) => {
     if (!selectedEvent) return;
-    const res = issueCertificate(participantName, selectedEvent.id, issuingType);
+    if (!canIssueOrRevoke) {
+      showToast('error', 'Only President or Core Team can issue certificates');
+      return;
+    }
+    const actor = user ? { name: user.name, role: user.role } : undefined;
+    const res = issueCertificate(participantName, selectedEvent.id, issuingType, actor);
     if (res.success) {
       showToast('success', res.message);
       onDataChange();
@@ -168,6 +177,10 @@ export default function CertificatesPage({ data, onDataChange }: CertificatesPag
 
   const handleIssueAllEligible = () => {
     if (!selectedEvent || eligibleRecipients.length === 0) return;
+    if (!canIssueOrRevoke) {
+      showToast('error', 'Only President or Core Team can issue certificates');
+      return;
+    }
     const toIssue = eligibleRecipients
       .filter((r) => !r.alreadyIssued)
       .map((r) => ({
@@ -181,7 +194,8 @@ export default function CertificatesPage({ data, onDataChange }: CertificatesPag
       return;
     }
 
-    const res = issueCertificatesBatch(toIssue);
+    const actor = user ? { name: user.name, role: user.role } : undefined;
+    const res = issueCertificatesBatch(toIssue, actor);
     showToast(
       'success',
       `Issued ${res.count} certificates successfully (${res.skipped} skipped duplicates)`
@@ -203,7 +217,12 @@ export default function CertificatesPage({ data, onDataChange }: CertificatesPag
 
   const handleRevokeConfirm = () => {
     if (!certToRevoke) return;
-    const ok = revokeCertificate(certToRevoke.id);
+    if (!canIssueOrRevoke) {
+      showToast('error', 'Only President or Core Team can revoke certificates');
+      return;
+    }
+    const actor = user ? { name: user.name, role: user.role } : undefined;
+    const ok = revokeCertificate(certToRevoke.id, actor);
     if (ok) {
       showToast('info', `Certificate ${certToRevoke.certificateCode} has been revoked`);
       onDataChange();
@@ -380,7 +399,8 @@ export default function CertificatesPage({ data, onDataChange }: CertificatesPag
           </div>
 
           {/* Section: Issuance Workbench */}
-          <div className="rounded-3xl p-6 sm:p-8 bg-[#0A1224]/80 border border-slate-800 mb-12">
+          {canIssueOrRevoke && (
+            <div className="rounded-3xl p-6 sm:p-8 bg-[#0A1224]/80 border border-slate-800 mb-12">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-800 mb-6">
               <div>
                 <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest block mb-1 font-mono">
@@ -476,6 +496,7 @@ export default function CertificatesPage({ data, onDataChange }: CertificatesPag
               </div>
             )}
           </div>
+        )}
 
           {/* Section: Issued Certificates Registry */}
           <div>
@@ -584,13 +605,15 @@ export default function CertificatesPage({ data, onDataChange }: CertificatesPag
                               >
                                 <Eye size={15} />
                               </button>
-                              <button
-                                onClick={() => setCertToRevoke(cert)}
-                                className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-                                title="Revoke Certificate"
-                              >
-                                <Trash2 size={15} />
-                              </button>
+                              {canIssueOrRevoke && (
+                                <button
+                                  onClick={() => setCertToRevoke(cert)}
+                                  className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                                  title="Revoke Certificate"
+                                >
+                                  <Trash2 size={15} />
+                                </button>
+                              )}
                             </div>
                           </td>
                         </tr>

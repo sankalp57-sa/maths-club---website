@@ -25,13 +25,18 @@ import AnimatedCounter from '../components/AnimatedCounter';
 import { cinematicEase } from '../motion/motionTokens';
 import Section from '../components/Section';
 
+import { useAuth } from '../context/AuthContext';
+
 interface AttendancePageProps {
   data: AppState;
   onDataChange: () => void;
 }
 
 export default function AttendancePage({ data, onDataChange }: AttendancePageProps) {
+  const { user, can } = useAuth();
   const { showToast } = useToast();
+  const canMark = can('mark_club_attendance');
+
   const [selectedEventId, setSelectedEventId] = useState<string>(
     data.events[0]?.id || ''
   );
@@ -90,16 +95,24 @@ export default function AttendancePage({ data, onDataChange }: AttendancePagePro
 
   const handleToggleAttendance = (participantId: string, currentStatus?: 'present' | 'absent') => {
     if (!selectedEventId) return;
+    if (!canMark) {
+      showToast('error', 'Access denied: Only President or Core Team can record attendance');
+      return;
+    }
     const newStatus = currentStatus === 'present' ? 'absent' : 'present';
-    markAttendance(selectedEventId, participantId, newStatus);
+    markAttendance(selectedEventId, participantId, newStatus, user ? { name: user.name, role: user.role } : undefined);
     showToast('success', `Participant marked as ${newStatus}`);
     onDataChange();
   };
 
   const handleMarkAll = (status: 'present' | 'absent') => {
     if (!selectedEventId || registeredParticipants.length === 0) return;
+    if (!canMark) {
+      showToast('error', 'Access denied: Only President or Core Team can record attendance');
+      return;
+    }
     registeredParticipants.forEach((p) => {
-      markAttendance(selectedEventId, p.id, status);
+      markAttendance(selectedEventId, p.id, status, user ? { name: user.name, role: user.role } : undefined);
     });
     showToast('success', `Marked all participants as ${status}`);
     onDataChange();
@@ -279,13 +292,13 @@ export default function AttendancePage({ data, onDataChange }: AttendancePagePro
           </div>
 
           {/* Bulk quick actions */}
-          {registeredParticipants.length > 0 && (
+          {canMark && registeredParticipants.length > 0 && (
             <div className="flex items-center gap-3">
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => handleMarkAll('present')}
-                className="px-3.5 py-2 rounded-xl text-xs font-semibold text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 transition-colors"
+                className="px-3.5 py-2 rounded-xl text-xs font-semibold text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 transition-colors cursor-pointer"
               >
                 Mark All Present
               </motion.button>
@@ -293,7 +306,7 @@ export default function AttendancePage({ data, onDataChange }: AttendancePagePro
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => handleMarkAll('absent')}
-                className="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-400 bg-slate-900 hover:bg-slate-800 border border-slate-800 transition-colors"
+                className="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-400 bg-slate-900 hover:bg-slate-800 border border-slate-800 transition-colors cursor-pointer"
               >
                 Reset All Absent
               </motion.button>
