@@ -105,7 +105,6 @@ export default function Login({ onNavigate, targetRedirect }: LoginProps) {
     setEmail(card.demoEmail);
     setPassword('Math@123');
     setErrorMessage(null);
-    showToast('info', `Pre-filled ${card.title} credentials: ${card.demoEmail}`);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -138,8 +137,6 @@ export default function Login({ onNavigate, targetRedirect }: LoginProps) {
         setIsLoading(false);
         return;
       }
-
-      showToast('success', `Welcome to MathClub Portal! Logged in as ${activeCard.title}`);
 
       // Role-based destination redirect
       if (targetRedirect && targetRedirect !== 'login' && targetRedirect !== 'signup') {

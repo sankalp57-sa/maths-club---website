@@ -79,7 +79,6 @@ export default function Signup({ onNavigate }: SignupProps) {
         return;
       }
 
-      showToast('success', `Welcome ${name}! Your participant account has been created.`);
       onNavigate('my-registrations');
     } catch {
       setErrorMessage('Failed to create account. Please try again.');
