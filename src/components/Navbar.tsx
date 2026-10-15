@@ -12,7 +12,6 @@ import {
   ClipboardCheck,
   Menu,
   X,
-  Sigma,
   Database,
   RotateCcw,
   Compass,
@@ -75,22 +74,24 @@ export default function Navbar({
           {/* Brand Logo & Title */}
           <div
             onClick={() => handleNav('dashboard')}
-            className="flex items-center gap-3.5 cursor-pointer select-none flex-shrink-0 group py-2"
+            className="flex items-center gap-3 cursor-pointer select-none flex-shrink-0 group py-2"
           >
-            <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center shadow-md shadow-cyan-500/10 group-hover:scale-105 transition-transform duration-200">
-              <Sigma size={22} className="text-white" />
+            {/* Club circular logo */}
+            <div className="w-11 h-11 lg:w-13 lg:h-13 rounded-full overflow-hidden flex-shrink-0 group-hover:scale-105 transition-transform duration-200 ring-2 ring-cyan-500/20 shadow-md shadow-cyan-500/10">
+              <img
+                src="/logo.png"
+                alt="Mathematics Club MITS-DU Gwalior"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-lg lg:text-xl font-extrabold text-white tracking-tight">
-                  MathClub
-                </span>
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-                  NEXUS
+                <span className="text-base lg:text-lg font-extrabold text-white tracking-tight leading-tight">
+                  Mathematics Club
                 </span>
               </div>
-              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em]">
-                Collegiate Platform
+              <p className="text-[10px] font-semibold text-cyan-400 uppercase tracking-[0.18em]">
+                MITS-DU Gwalior
               </p>
             </div>
           </div>
