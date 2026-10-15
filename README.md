@@ -1,5 +1,7 @@
 # MathClub Nexus — Mathematics Club Management Platform
 
+> **Live deployed URL**: [https://maths-club-website.onrender.com](https://maths-club-website.onrender.com)
+> > *Hosted on Render's free tier, so the first load may take up to a minute to wake the server.*
 > **Live Local URL**: [http://localhost:5173/](http://localhost:5173/)  
 > **Built for**: College Mathematics Club Recruitment Task
 
