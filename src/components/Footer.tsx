@@ -2,8 +2,9 @@
 // MathClub Nexus — Editorial University Footer
 // ============================================================
 
-import { Sigma, Code, Award } from 'lucide-react';
+import { Code, Award } from 'lucide-react';
 import type { NavSection } from '../types';
+import MathClubLogo from './MathClubLogo';
 
 interface FooterProps {
   onNavigate: (section: NavSection) => void;
@@ -18,12 +19,15 @@ export default function Footer({ onNavigate }: FooterProps) {
           {/* Column 1: Brand & Mission */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center shadow-md shadow-cyan-500/15">
-                <Sigma size={22} className="text-white" />
+              <MathClubLogo className="w-10 h-10" />
+              <div>
+                <span className="text-lg font-bold text-white tracking-tight block">
+                  Mathematics Club
+                </span>
+                <p className="text-[10px] font-semibold text-cyan-400 uppercase tracking-[0.18em]">
+                  MITS-DU Gwalior
+                </p>
               </div>
-              <span className="text-lg font-bold text-white tracking-tight">
-                MathClub Nexus
-              </span>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed max-w-sm">
               The premier collegiate mathematics club platform. Orchestrating competitive math olympiads, student research colloquia, automated quiz leaderboards, and transparent participation auditing.
@@ -103,7 +107,7 @@ export default function Footer({ onNavigate }: FooterProps) {
 
         {/* Separated bottom metadata */}
         <div className="pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <p>© {new Date().getFullYear()} University Mathematics Club. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Mathematics Club, MITS-DU Gwalior. All rights reserved.</p>
           <div className="flex items-center gap-2 text-cyan-400/80 font-medium">
             <Award size={14} />
             <span>MathClub Recruitment Task 2026</span>

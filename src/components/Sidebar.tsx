@@ -15,6 +15,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import type { NavSection } from '../types';
+import MathClubLogo from './MathClubLogo';
 
 interface SidebarProps {
   activeSection: NavSection;
@@ -53,18 +54,15 @@ export default function Sidebar({
       {/* Brand Header */}
       <div className={`p-4 border-b border-slate-800/80 flex items-center ${isCollapsed && !mobile ? 'justify-center' : 'justify-between'}`}>
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 via-indigo-600 to-blue-600 flex items-center justify-center shadow-lg shadow-violet-500/25 flex-shrink-0">
-            <Sigma size={22} className="text-white" />
-          </div>
+          <MathClubLogo className="w-9 h-9" />
           {(!isCollapsed || mobile) && (
             <div className="min-w-0">
-              <h1 className="text-base font-bold text-white tracking-tight truncate flex items-center gap-1.5">
-                MathClub
-                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300 border border-violet-500/30">
-                  v1.0
-                </span>
+              <h1 className="text-sm font-bold text-white tracking-tight truncate flex items-center gap-1.5">
+                Mathematics Club
               </h1>
-              <p className="text-[10px] font-semibold text-violet-400 uppercase tracking-[0.2em]">Nexus Platform</p>
+              <p className="text-[9px] font-semibold text-cyan-400 uppercase tracking-[0.18em]">
+                MITS-DU Gwalior
+              </p>
             </div>
           )}
         </div>

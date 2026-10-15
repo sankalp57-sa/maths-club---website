@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import type { NavSection } from '../types';
 import { springSmooth } from '../motion/motionTokens';
+import MathClubLogo from './MathClubLogo';
 
 interface NavbarProps {
   activeSection: NavSection;
@@ -76,23 +77,23 @@ export default function Navbar({
             onClick={() => handleNav('dashboard')}
             className="flex items-center gap-3 cursor-pointer select-none flex-shrink-0 group py-2"
           >
-            {/* Club circular logo */}
-            <div className="w-11 h-11 lg:w-13 lg:h-13 rounded-full overflow-hidden flex-shrink-0 group-hover:scale-105 transition-transform duration-200 ring-2 ring-cyan-500/20 shadow-md shadow-cyan-500/10">
-              <img
-                src="/logo.png"
-                alt="Mathematics Club MITS-DU Gwalior"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div>
+            {/* Modern Mathematical Emblem Logo */}
+            <MathClubLogo className="w-11 h-11 lg:w-12 lg:h-12" />
+            <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <span className="text-base lg:text-lg font-extrabold text-white tracking-tight leading-tight">
+                <span className="text-base lg:text-lg font-black text-white tracking-tight leading-tight group-hover:text-cyan-200 transition-colors">
                   Mathematics Club
                 </span>
+                <span className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-cyan-500/10 text-cyan-400 border border-cyan-500/25">
+                  Nexus
+                </span>
               </div>
-              <p className="text-[10px] font-semibold text-cyan-400 uppercase tracking-[0.18em]">
-                MITS-DU Gwalior
-              </p>
+              <div className="flex items-center gap-1.5 pt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                <p className="text-[10px] font-bold text-cyan-400/90 uppercase tracking-[0.2em]">
+                  MITS-DU Gwalior
+                </p>
+              </div>
             </div>
           </div>
 
